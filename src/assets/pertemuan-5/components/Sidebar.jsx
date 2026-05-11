@@ -1,110 +1,193 @@
-import { FaUserMd, FaUserFriends, FaPlus, FaExclamationTriangle, FaLock, FaBan, FaTooth } from "react-icons/fa";
+import {
+  FaUserMd,
+  FaUserFriends,
+  FaPlus,
+  FaExclamationTriangle,
+  FaLock,
+  FaBan,
+  FaTooth,
+} from "react-icons/fa";
+
 import { MdSpaceDashboard } from "react-icons/md";
 import { NavLink } from "react-router-dom";
 
 const menuClass = ({ isActive }) =>
-  `flex cursor-pointer items-center rounded-xl p-4 space-x-2 ${isActive
-    ? "text-[#2BB5A0] bg-[#E8F8F6] font-extrabold"
-    : "text-gray-500 hover:text-[#2BB5A0] hover:bg-[#E8F8F6] hover:font-extrabold"
+  `group flex items-center rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
+    isActive
+      ? "bg-[#0F766E] text-white shadow-sm"
+      : "text-[#8A92A6] hover:bg-[#F3F4F6] hover:text-[#0F766E]"
   }`;
+
+const iconClass = ({ isActive }) =>
+  `${
+    isActive
+      ? "text-white"
+      : "text-[#8A92A6] group-hover:text-[#0F766E]"
+  } transition-colors duration-200`;
 
 export default function Sidebar() {
   return (
-    <div className="flex flex-col w-64 min-h-screen bg-white border-r border-gray-100 py-8 px-6">
+    <aside className="w-64 min-h-screen bg-[#F8F9FB] border-r border-gray-200 flex flex-col">
 
-      {/* Logo */}
-      <div className="mb-10 flex items-center gap-2.5">
-        <FaTooth className="text-[32px] text-[#2BB5A0] -scale-x-100" />
-        <div>
-          <span className="block text-[22px] font-[800] text-gray-900 leading-none tracking-tight font-poppins">
-            nopall
-          </span>
-          <span className="block text-[9px] font-semibold text-gray-400 mt-0.5 tracking-widest uppercase font-barlow">
-            DENTAL CLINIC SYSTEM
-          </span>
-        </div>
-      </div>
+      {/* HEADER */}
+      <div className="h-16 flex items-center px-6 border-b border-gray-200 bg-white">
 
-      {/* Menu */}
-      <nav className="flex-1">
-        <ul className="space-y-1">
-          <li>
-            <NavLink id="menu-1" to="/" className={menuClass}>
-              <MdSpaceDashboard className="mr-4 text-xl" />
-              Dashboard
-            </NavLink>
-          </li>
-          <li>
-            <NavLink id="menu-2" to="/doctors" className={menuClass}>
-              <FaUserMd className="text-base shrink-0" />
-              <span>Doctors</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink id="menu-3" to="/pasien" className={menuClass}>
-              <FaUserFriends className="text-base shrink-0" />
-              <span>Pasien</span>
-            </NavLink>
-          </li>
+        <div className="flex items-center gap-3">
 
-          {/* Divider */}
-          <li className="pt-3 pb-1 px-2">
-            <span className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">Error Pages</span>
-          </li>
-          <li>
-            <NavLink id="menu-4" to="/error-400" className={menuClass}>
-              <FaExclamationTriangle className="text-base shrink-0" />
-              <span>Error 400</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink id="menu-5" to="/error-401" className={menuClass}>
-              <FaLock className="text-base shrink-0" />
-              <span>Error 401</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink id="menu-6" to="/error-403" className={menuClass}>
-              <FaBan className="text-base shrink-0" />
-              <span>Error 403</span>
-            </NavLink>
-          </li>
-        </ul>
-      </nav>
-
-      {/* Footer Banner */}
-      <div className="mt-8">
-        <div className="bg-[#2BB5A0] rounded-2xl p-4 mb-6 relative overflow-hidden">
-          {/* Decorative circle */}
-          <div className="absolute -top-6 -right-6 w-24 h-24 rounded-full bg-white/10" />
-
-          {/* Avatar */}
-          <div className="flex justify-end mb-2">
-            <img
-              className="w-14 h-14 rounded-full border-2 border-white object-cover"
-              src="https://avatar.iran.liara.run/public/boy?username=Ash"
-              alt="Guide"
-            />
+          {/* LOGO */}
+          <div className="w-10 h-10 rounded-xl bg-[#0F766E] flex items-center justify-center shadow-sm">
+            <FaTooth className="text-white text-lg -scale-x-100" />
           </div>
 
-          <p className="text-white text-xs font-medium leading-relaxed mb-3">
-            Please organize your menus through button below!
-          </p>
-          <button className="flex items-center gap-1.5 bg-white text-gray-700 px-3 py-2 rounded-lg font-bold text-xs hover:bg-gray-50 transition-colors w-full justify-center">
-            <FaPlus className="text-[10px]" />
-            <span>Add Menus</span>
-          </button>
-        </div>
+          {/* TEXT */}
+          <div>
+            <h1 className="text-[22px] font-[800] text-gray-900 leading-none tracking-tight">
+              Nopall UI
+            </h1>
 
-        <div className="px-1">
-          <p className="font-bold text-[#2BB5A0] text-[11px] leading-snug">
-            Nopall Dental Clinic
-          </p>
-          <p className="text-gray-400 text-[11px] mt-0.5">
-            © 2025 All Right Reserved
-          </p>
+            <p className="text-[10px] font-semibold text-[#8A92A6] tracking-[0.2em] uppercase mt-1">
+              Dental Clinic
+            </p>
+          </div>
+
         </div>
       </div>
-    </div>
+
+      {/* MENU */}
+      <div className="flex-1 px-4 py-6 overflow-y-auto">
+
+        {/* MAIN MENU */}
+        <div className="mb-3 px-3">
+          <p className="text-[11px] uppercase tracking-widest text-[#8A92A6] font-bold">
+            Main Menu
+          </p>
+        </div>
+
+        <nav className="space-y-1">
+
+          <NavLink to="/" className={menuClass}>
+            {({ isActive }) => (
+              <>
+                <MdSpaceDashboard
+                  className={`text-lg mr-3 ${iconClass({ isActive })}`}
+                />
+                <span>Dashboard</span>
+              </>
+            )}
+          </NavLink>
+
+          <NavLink to="/doctors" className={menuClass}>
+            {({ isActive }) => (
+              <>
+                <FaUserMd
+                  className={`text-base mr-3 ${iconClass({ isActive })}`}
+                />
+                <span>Doctors</span>
+              </>
+            )}
+          </NavLink>
+
+          <NavLink to="/pasien" className={menuClass}>
+            {({ isActive }) => (
+              <>
+                <FaUserFriends
+                  className={`text-base mr-3 ${iconClass({ isActive })}`}
+                />
+                <span>Patients</span>
+              </>
+            )}
+          </NavLink>
+
+        </nav>
+
+        {/* ERROR MENU */}
+        <div className="mt-8 mb-3 px-3">
+          <p className="text-[11px] uppercase tracking-widest text-[#8A92A6] font-bold">
+            Error Pages
+          </p>
+        </div>
+
+        <nav className="space-y-1">
+
+          <NavLink to="/error-400" className={menuClass}>
+            {({ isActive }) => (
+              <>
+                <FaExclamationTriangle
+                  className={`text-sm mr-3 ${iconClass({ isActive })}`}
+                />
+                <span>Error 400</span>
+              </>
+            )}
+          </NavLink>
+
+          <NavLink to="/error-401" className={menuClass}>
+            {({ isActive }) => (
+              <>
+                <FaLock
+                  className={`text-sm mr-3 ${iconClass({ isActive })}`}
+                />
+                <span>Error 401</span>
+              </>
+            )}
+          </NavLink>
+
+          <NavLink to="/error-403" className={menuClass}>
+            {({ isActive }) => (
+              <>
+                <FaBan
+                  className={`text-sm mr-3 ${iconClass({ isActive })}`}
+                />
+                <span>Error 403</span>
+              </>
+            )}
+          </NavLink>
+
+        </nav>
+
+        {/* CARD */}
+        <div className="mt-10 bg-gradient-to-br from-[#0F766E] to-[#14B8A6] rounded-2xl p-5 text-white relative overflow-hidden">
+
+          {/* BACKGROUND CIRCLE */}
+          <div className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-white/10"></div>
+
+          <div className="relative z-10">
+
+            {/* PROFILE */}
+            <img
+              className="w-14 h-14 rounded-full border-2 border-white object-cover mb-4"
+              src="https://avatar.iran.liara.run/public/boy?username=Ash"
+              alt="Profile"
+            />
+
+            <h3 className="font-bold text-sm mb-1">
+              Dental Clinic System
+            </h3>
+
+            <p className="text-xs text-white/80 leading-relaxed mb-4">
+              Organize your doctors and patients easily with modern dashboard UI.
+            </p>
+
+            <button className="w-full bg-white text-[#0F766E] font-semibold text-xs rounded-xl py-2.5 flex items-center justify-center gap-2 hover:bg-gray-100 transition">
+              <FaPlus className="text-[10px]" />
+              Add Menus
+            </button>
+
+          </div>
+        </div>
+      </div>
+
+      {/* FOOTER */}
+      <div className="px-6 py-4 border-t border-gray-200 bg-white">
+
+        <p className="text-xs font-semibold text-[#8A92A6]">
+          Naufal Dental Clinic
+        </p>
+
+        <p className="text-[11px] text-[#8A92A6] mt-1">
+          © 2025 All Rights Reserved
+        </p>
+
+      </div>
+    </aside>
   );
 }

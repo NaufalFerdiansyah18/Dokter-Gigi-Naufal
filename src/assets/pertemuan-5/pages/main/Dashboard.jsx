@@ -33,7 +33,7 @@ export default function Dashboard() {
         
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Hello Naufal! 👋</h1>
+            <h1 className="text-3xl font-bold mb-2">Hello Naufal! </h1>
             <p className="text-white/80 text-sm md:text-base max-w-lg">
               We are on a mission to help you manage Nopall Dental Clinic easily and beautifully. Have a great day at work!
             </p>
