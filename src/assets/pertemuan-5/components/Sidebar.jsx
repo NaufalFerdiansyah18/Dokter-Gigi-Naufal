@@ -98,7 +98,7 @@ export default function Sidebar() {
 
         <div className="px-1">
           <p className="font-bold text-[#2BB5A0] text-[11px] leading-snug">
-            Dentiva Dental Clinic
+            Nopall Dental Clinic
           </p>
           <p className="text-gray-400 text-[11px] mt-0.5">
             © 2025 All Right Reserved

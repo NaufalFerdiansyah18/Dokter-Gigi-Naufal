@@ -35,7 +35,7 @@ export default function Dashboard() {
           <div>
             <h1 className="text-3xl font-bold mb-2">Hello Naufal! 👋</h1>
             <p className="text-white/80 text-sm md:text-base max-w-lg">
-              We are on a mission to help you manage Dentiva Dental Clinic easily and beautifully. Have a great day at work!
+              We are on a mission to help you manage Nopall Dental Clinic easily and beautifully. Have a great day at work!
             </p>
           </div>
           <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-colors px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 w-fit">
