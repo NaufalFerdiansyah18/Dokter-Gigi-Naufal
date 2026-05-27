@@ -27,6 +27,7 @@ const PatientDetail = React.lazy(() => import("./assets/pertemuan-5/pages/main/P
 const DoctorDetail = React.lazy(() => import("./assets/pertemuan-5/pages/main/DoctorDetail"))
 
 
+
 const Register = React.lazy(() => import("./assets/pertemuan-5/pages/auth/Register"))
 const Login = React.lazy(() => import("./assets/pertemuan-5/pages/auth/Login"))
 const Forgot = React.lazy(() => import("./assets/pertemuan-5/pages/auth/Forgot"))

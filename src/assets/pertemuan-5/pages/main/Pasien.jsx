@@ -6,18 +6,40 @@ import {
 } from "react-icons/fa";
 
 import { useClinic } from "../../context/ClinicContext";
-import Button   from "../../components/Button";
-import Badge    from "../../components/Badge";
-import Avatar   from "../../components/Avatar";
-import Card     from "../../components/Card";
-import Table    from "../../components/Table";
-import Input    from "../../components/Input";
-import Select   from "../../components/Select";
-import Modal    from "../../components/Modal";
-import StatCard from "../../components/StatCard";
-import Tooltip  from "../../components/Tooltip";
-import Alert    from "../../components/Alert";
+
+// Custom UI components
+import Badge      from "../../components/Badge";
+import Avatar     from "../../components/Avatar";
+import Card       from "../../components/Card";
+import Table      from "../../components/Table";
+import Input      from "../../components/Input";
+import Select     from "../../components/Select";
+import StatCard   from "../../components/StatCard";
+import Tooltip    from "../../components/Tooltip";
+import Alert      from "../../components/Alert";
 import Pagination from "../../components/Pagination";
+
+// Shadcn UI — Button
+import { Button } from "@/components/ui/button";
+
+// Shadcn UI — Dialog (menggantikan Modal custom)
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+
+// Shadcn UI — Combobox (untuk pilih dokter)
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxContent,
+  ComboboxList,
+  ComboboxItem,
+  ComboboxEmpty,
+} from "@/components/ui/combobox";
 
 const EMPTY_FORM = {
   nama: "", umur: "", jenisKelamin: "L", noHp: "",
@@ -84,19 +106,16 @@ export default function Pasien() {
   };
 
   const openEdit = (p) => {
-    setForm({ id: p.id, nama: p.nama, umur: p.umur, jenisKelamin: p.jenisKelamin,
+    setForm({
+      id: p.id, nama: p.nama, umur: p.umur, jenisKelamin: p.jenisKelamin,
       noHp: p.noHp, alamat: p.alamat, treatment: p.treatment || "",
-      dokter: p.dokter || "", status: p.status });
+      dokter: p.dokter || "", status: p.status,
+    });
     setIsEdit(true);
     setShowForm(true);
   };
 
   const closeForm = () => { setForm(EMPTY_FORM); setIsEdit(false); setShowForm(false); };
-
-  const doctorOptions = [
-    { value: "", label: "Pilih Dokter" },
-    ...doctors.map((d) => ({ value: d.nama, label: d.nama })),
-  ];
 
   // Kolom tabel
   const columns = [
@@ -107,10 +126,7 @@ export default function Pasien() {
         <div className="flex items-center gap-3">
           <Avatar name={val} size="sm" color="bg-[#E8F8F6] text-[#1A7C6E]" />
           <div>
-            <Link
-              to={`/pasien/${row.id}`}
-              className="font-semibold text-gray-800 hover:text-[#1A7C6E] transition-colors"
-            >
+            <Link to={`/pasien/${row.id}`} className="font-semibold text-gray-800 hover:text-[#1A7C6E] transition-colors">
               {val}
             </Link>
             <p className="text-xs text-gray-400">{row.umur} Thn</p>
@@ -133,19 +149,25 @@ export default function Pasien() {
       label: "Action",
       align: "center",
       render: (_, row) => (
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-1">
           <Tooltip content="Lihat Detail" position="top">
             <Link to={`/pasien/${row.id}`}>
-              <Button variant="ghost" size="sm" leftIcon={<FaEye />} />
+              <Button variant="ghost" size="icon-sm"><FaEye /></Button>
             </Link>
           </Tooltip>
           <Tooltip content="Edit" position="top">
-            <Button variant="ghost" size="sm" leftIcon={<FaEdit />} onClick={() => openEdit(row)} />
+            <Button variant="ghost" size="icon-sm" onClick={() => openEdit(row)}>
+              <FaEdit />
+            </Button>
           </Tooltip>
           <Tooltip content="Hapus" position="top">
-            <Button variant="ghost" size="sm" leftIcon={<FaTrashAlt />}
+            <Button
+              variant="ghost" size="icon-sm"
               onClick={() => handleDelete(row.id)}
-              className="hover:text-red-500 hover:bg-red-50" />
+              className="text-gray-400 hover:text-red-500 hover:bg-red-50"
+            >
+              <FaTrashAlt />
+            </Button>
           </Tooltip>
         </div>
       ),
@@ -167,11 +189,10 @@ export default function Pasien() {
             </p>
           </div>
           <Button
-            variant="secondary"
-            leftIcon={<FaPlus />}
             onClick={() => setShowForm(true)}
             className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
           >
+            <FaPlus />
             Tambah Pasien
           </Button>
         </div>
@@ -189,9 +210,9 @@ export default function Pasien() {
 
         {/* Stat Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <StatCard title="Total Pasien"          value={totalPasien}        icon={<FaUserAlt />}       iconBg="bg-[#E8F8F6]" iconColor="text-[#1A7C6E]" trend={8} trendLabel="bulan ini" />
-          <StatCard title="Pasien Baru (Waiting)" value={pasienBaru}         icon={<FaNotesMedical />}  iconBg="bg-blue-50"   iconColor="text-blue-600" />
-          <StatCard title="Appointment Hari Ini"  value={appointmentHariIni} icon={<FaCalendarAlt />}   iconBg="bg-purple-50" iconColor="text-purple-600" />
+          <StatCard title="Total Pasien"          value={totalPasien}        icon={<FaUserAlt />}      iconBg="bg-[#E8F8F6]" iconColor="text-[#1A7C6E]" trend={8} trendLabel="bulan ini" />
+          <StatCard title="Pasien Baru (Waiting)" value={pasienBaru}         icon={<FaNotesMedical />} iconBg="bg-blue-50"   iconColor="text-blue-600" />
+          <StatCard title="Appointment Hari Ini"  value={appointmentHariIni} icon={<FaCalendarAlt />}  iconBg="bg-purple-50" iconColor="text-purple-600" />
         </div>
 
         {/* Toolbar */}
@@ -228,85 +249,112 @@ export default function Pasien() {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="mt-4 flex justify-end">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
           </div>
         )}
       </div>
 
-      {/* Modal Add/Edit */}
-      <Modal
-        isOpen={showForm}
-        onClose={closeForm}
-        title={isEdit ? "Edit Data Pasien" : "Tambah Pasien Baru"}
-        size="md"
-        footer={
-          <>
-            <Button variant="ghost" onClick={closeForm}>Batal</Button>
-            <Button variant="primary" type="submit" form="pasien-form">Simpan</Button>
-          </>
-        }
-      >
-        <form id="pasien-form" onSubmit={handleSave} className="space-y-4">
-          <Input
-            label="Nama Pasien"
-            required
-            value={form.nama}
-            onChange={(e) => setForm({ ...form, nama: e.target.value })}
-          />
-          <div className="grid grid-cols-2 gap-4">
+      {/* ─── Shadcn Dialog — Add / Edit Pasien ─── */}
+      <Dialog open={showForm} onOpenChange={(open) => !open && closeForm()}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              {isEdit ? "Edit Data Pasien" : "Tambah Pasien Baru"}
+            </DialogTitle>
+          </DialogHeader>
+
+          <form id="pasien-form" onSubmit={handleSave} className="space-y-4 py-2">
             <Input
-              label="Umur"
-              type="number"
+              label="Nama Pasien"
               required
-              value={form.umur}
-              onChange={(e) => setForm({ ...form, umur: e.target.value })}
+              value={form.nama}
+              onChange={(e) => setForm({ ...form, nama: e.target.value })}
             />
-            <Select
-              label="Jenis Kelamin"
-              options={[{ value: "L", label: "Laki-laki" }, { value: "P", label: "Perempuan" }]}
-              value={form.jenisKelamin}
-              onChange={(e) => setForm({ ...form, jenisKelamin: e.target.value })}
-              placeholder={null}
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="Umur"
+                type="number"
+                required
+                value={form.umur}
+                onChange={(e) => setForm({ ...form, umur: e.target.value })}
+              />
+              <Select
+                label="Jenis Kelamin"
+                options={[{ value: "L", label: "Laki-laki" }, { value: "P", label: "Perempuan" }]}
+                value={form.jenisKelamin}
+                onChange={(e) => setForm({ ...form, jenisKelamin: e.target.value })}
+                placeholder={null}
+              />
+            </div>
+            <Input
+              label="Nomor HP"
+              required
+              value={form.noHp}
+              onChange={(e) => setForm({ ...form, noHp: e.target.value })}
             />
-          </div>
-          <Input
-            label="Nomor HP"
-            required
-            value={form.noHp}
-            onChange={(e) => setForm({ ...form, noHp: e.target.value })}
-          />
-          <Input
-            label="Alamat"
-            value={form.alamat}
-            onChange={(e) => setForm({ ...form, alamat: e.target.value })}
-          />
-          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Alamat"
+              value={form.alamat}
+              onChange={(e) => setForm({ ...form, alamat: e.target.value })}
+            />
             <Input
               label="Treatment"
               value={form.treatment}
               onChange={(e) => setForm({ ...form, treatment: e.target.value })}
             />
+
+            {/* ─── Shadcn Combobox — Pilih Dokter ─── */}
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-semibold text-gray-700">
+                Pilih Dokter
+              </label>
+              <Combobox
+                value={form.dokter}
+                onValueChange={(val) => setForm({ ...form, dokter: val })}
+              >
+                <ComboboxInput
+                  placeholder="Cari nama dokter..."
+                  showClear={!!form.dokter}
+                />
+                <ComboboxContent>
+                  <ComboboxList>
+                    <ComboboxEmpty>Dokter tidak ditemukan.</ComboboxEmpty>
+                    {doctors.map((d) => (
+                      <ComboboxItem key={d.id} value={d.nama}>
+                        <div className="flex items-center gap-2">
+                          <Avatar name={d.nama.replace("drg. ", "")} size="xs" color="bg-[#E8F8F6] text-[#1A7C6E]" />
+                          <div>
+                            <p className="text-sm font-medium">{d.nama}</p>
+                            <p className="text-xs text-gray-400">{d.spesialis}</p>
+                          </div>
+                        </div>
+                      </ComboboxItem>
+                    ))}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
+              {form.dokter && (
+                <p className="text-xs text-[#1A7C6E] font-medium mt-0.5">
+                  ✓ Dipilih: {form.dokter}
+                </p>
+              )}
+            </div>
+
             <Select
-              label="Dokter"
-              options={doctorOptions}
-              value={form.dokter}
-              onChange={(e) => setForm({ ...form, dokter: e.target.value })}
+              label="Status"
+              options={["Active", "Waiting", "Completed", "Cancel"]}
+              value={form.status}
+              onChange={(e) => setForm({ ...form, status: e.target.value })}
               placeholder={null}
             />
-          </div>
-          <Select
-            label="Status"
-            options={["Active", "Waiting", "Completed", "Cancel"]}
-            value={form.status}
-            onChange={(e) => setForm({ ...form, status: e.target.value })}
-            placeholder={null}
-          />
-        </form>
-      </Modal>
+          </form>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={closeForm}>Batal</Button>
+            <Button type="submit" form="pasien-form">Simpan</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

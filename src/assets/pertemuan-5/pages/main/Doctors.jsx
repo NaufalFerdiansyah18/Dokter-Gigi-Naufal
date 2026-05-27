@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   FaPlus, FaSearch, FaEye, FaEdit, FaTrashAlt,
@@ -6,40 +6,99 @@ import {
 } from "react-icons/fa";
 
 import { useClinic } from "../../context/ClinicContext";
-import Button    from "../../components/Button";
-import Badge     from "../../components/Badge";
-import Avatar    from "../../components/Avatar";
-import Card      from "../../components/Card";
-import Table     from "../../components/Table";
-import Input     from "../../components/Input";
-import Select    from "../../components/Select";
-import Modal     from "../../components/Modal";
-import StatCard  from "../../components/StatCard";
-import Tooltip   from "../../components/Tooltip";
-import Alert     from "../../components/Alert";
+
+// Custom UI components
+import Badge    from "../../components/Badge";
+import Avatar   from "../../components/Avatar";
+import Card     from "../../components/Card";
+import Table    from "../../components/Table";
+import Input    from "../../components/Input";
+import Select   from "../../components/Select";
+import StatCard from "../../components/StatCard";
+import Tooltip  from "../../components/Tooltip";
+import Alert    from "../../components/Alert";
+
+// Shadcn UI
+import { Button }   from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Combobox, ComboboxInput, ComboboxContent,
+  ComboboxList, ComboboxItem, ComboboxEmpty,
+} from "@/components/ui/combobox";
 
 const EMPTY_FORM = {
   nama: "", spesialis: "", noHp: "", email: "", jadwal: "", status: "Active",
 };
 
-const STATUS_BADGE = {
-  Active:   "success",
-  Inactive: "default",
-};
+const STATUS_BADGE = { Active: "success", Inactive: "default" };
+
+// ─── Skeleton Components ──────────────────────────────────────────────────────
+function StatCardSkeleton() {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5">
+      <Skeleton className="w-14 h-14 rounded-full shrink-0" />
+      <div className="flex-1 space-y-2">
+        <Skeleton className="h-3 w-24" />
+        <Skeleton className="h-7 w-12" />
+      </div>
+    </div>
+  );
+}
+
+function TableSkeleton({ rows = 5, cols = 6 }) {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      {/* thead skeleton */}
+      <div className="flex gap-4 px-6 py-3 border-b border-gray-100 bg-gray-50">
+        {Array.from({ length: cols }).map((_, i) => (
+          <Skeleton key={i} className="h-3 flex-1" />
+        ))}
+      </div>
+      {/* rows skeleton */}
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="flex items-center gap-4 px-6 py-4 border-b border-gray-50 last:border-0">
+          <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+          <div className="flex-1 space-y-1.5">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+          <Skeleton className="h-4 w-24 hidden md:block" />
+          <Skeleton className="h-4 w-28 hidden lg:block" />
+          <Skeleton className="h-4 w-8 hidden lg:block" />
+          <Skeleton className="h-5 w-16 rounded-full" />
+          <div className="flex gap-1 shrink-0">
+            <Skeleton className="w-7 h-7 rounded-lg" />
+            <Skeleton className="w-7 h-7 rounded-lg" />
+            <Skeleton className="w-7 h-7 rounded-lg" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function Doctors() {
   const { doctors, setDoctors, patients } = useClinic();
 
-  const [searchTerm,    setSearchTerm]    = useState("");
-  const [filterStatus,  setFilterStatus]  = useState("");
-  const [showForm,      setShowForm]      = useState(false);
-  const [form,          setForm]          = useState(EMPTY_FORM);
-  const [isEdit,        setIsEdit]        = useState(false);
-  const [savedAlert,    setSavedAlert]    = useState(false);
+  const [searchTerm,   setSearchTerm]   = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [showForm,     setShowForm]     = useState(false);
+  const [form,         setForm]         = useState(EMPTY_FORM);
+  const [isEdit,       setIsEdit]       = useState(false);
+  const [savedAlert,   setSavedAlert]   = useState(false);
+  const [isLoading,    setIsLoading]    = useState(true);
 
-  const totalDokter        = doctors.length;
-  const dokterAktif        = doctors.filter((d) => d.status === "Active").length;
-  const treatmentHariIni   = 12;
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 1200);
+    return () => clearTimeout(t);
+  }, []);
+
+  const totalDokter      = doctors.length;
+  const dokterAktif      = doctors.filter((d) => d.status === "Active").length;
+  const treatmentHariIni = 12;
 
   const filteredDoctors = useMemo(() => {
     return doctors.filter((d) => {
@@ -72,10 +131,12 @@ export default function Doctors() {
     }
   };
 
-  const openEdit = (d) => { setForm(d); setIsEdit(true); setShowForm(true); };
-  const closeForm = () => { setForm(EMPTY_FORM); setIsEdit(false); setShowForm(false); };
+  const openEdit  = (d) => { setForm(d); setIsEdit(true); setShowForm(true); };
+  const closeForm = ()  => { setForm(EMPTY_FORM); setIsEdit(false); setShowForm(false); };
 
-  // Kolom tabel
+  // Spesialis unik untuk Combobox
+  const spesialisList = [...new Set(doctors.map((d) => d.spesialis))];
+
   const columns = [
     {
       key: "nama",
@@ -107,27 +168,29 @@ export default function Doctors() {
     {
       key: "status",
       label: "Status",
-      render: (val) => (
-        <Badge variant={STATUS_BADGE[val] || "default"} dot>{val}</Badge>
-      ),
+      render: (val) => <Badge variant={STATUS_BADGE[val] || "default"} dot>{val}</Badge>,
     },
     {
       key: "action",
       label: "Action",
       align: "center",
       render: (_, row) => (
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-1">
           <Tooltip content="Lihat Detail" position="top">
             <Link to={`/doctors/${row.id}`}>
-              <Button variant="ghost" size="sm" leftIcon={<FaEye />} />
+              <Button variant="ghost" size="icon-sm"><FaEye /></Button>
             </Link>
           </Tooltip>
           <Tooltip content="Edit" position="top">
-            <Button variant="ghost" size="sm" leftIcon={<FaEdit />} onClick={() => openEdit(row)} />
+            <Button variant="ghost" size="icon-sm" onClick={() => openEdit(row)}>
+              <FaEdit />
+            </Button>
           </Tooltip>
           <Tooltip content="Hapus" position="top">
-            <Button variant="ghost" size="sm" leftIcon={<FaTrashAlt />} onClick={() => handleDelete(row.id)}
-              className="hover:text-red-500 hover:bg-red-50" />
+            <Button variant="ghost" size="icon-sm" onClick={() => handleDelete(row.id)}
+              className="text-gray-400 hover:text-red-500 hover:bg-red-50">
+              <FaTrashAlt />
+            </Button>
           </Tooltip>
         </div>
       ),
@@ -148,20 +211,15 @@ export default function Doctors() {
               Manage doctor schedules, monitor active doctors, and organize clinic services efficiently.
             </p>
           </div>
-          <Button
-            variant="secondary"
-            leftIcon={<FaPlus />}
-            onClick={() => setShowForm(true)}
-            className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm"
-          >
-            Tambah Dokter
+          <Button onClick={() => setShowForm(true)}
+            className="bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm">
+            <FaPlus /> Tambah Dokter
           </Button>
         </div>
       </div>
 
       <div className="relative -mt-14 z-20">
 
-        {/* Alert sukses */}
         {savedAlert && (
           <div className="mb-4">
             <Alert variant="success" title="Berhasil!" dismissible onDismiss={() => setSavedAlert(false)}>
@@ -172,9 +230,15 @@ export default function Doctors() {
 
         {/* Stat Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <StatCard title="Total Dokter"       value={totalDokter}      icon={<FaUserMd />}        iconBg="bg-[#E8F8F6]"  iconColor="text-[#1A7C6E]" />
-          <StatCard title="Dokter Aktif"       value={dokterAktif}      icon={<FaStethoscope />}   iconBg="bg-blue-50"    iconColor="text-blue-600" />
-          <StatCard title="Treatment Hari Ini" value={treatmentHariIni} icon={<FaCalendarCheck />} iconBg="bg-purple-50"  iconColor="text-purple-600" />
+          {isLoading ? (
+            <><StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton /></>
+          ) : (
+            <>
+              <StatCard title="Total Dokter"       value={totalDokter}      icon={<FaUserMd />}        iconBg="bg-[#E8F8F6]" iconColor="text-[#1A7C6E]" />
+              <StatCard title="Dokter Aktif"       value={dokterAktif}      icon={<FaStethoscope />}   iconBg="bg-blue-50"   iconColor="text-blue-600" />
+              <StatCard title="Treatment Hari Ini" value={treatmentHariIni} icon={<FaCalendarCheck />} iconBg="bg-purple-50" iconColor="text-purple-600" />
+            </>
+          )}
         </div>
 
         {/* Toolbar */}
@@ -204,67 +268,77 @@ export default function Doctors() {
         </Card>
 
         {/* Table */}
-        <Table columns={columns} data={filteredDoctors} emptyText="Tidak ada data dokter ditemukan." />
+        {isLoading
+          ? <TableSkeleton rows={3} cols={6} />
+          : <Table columns={columns} data={filteredDoctors} emptyText="Tidak ada data dokter ditemukan." />
+        }
       </div>
 
-      {/* Modal Add/Edit */}
-      <Modal
-        isOpen={showForm}
-        onClose={closeForm}
-        title={isEdit ? "Edit Data Dokter" : "Tambah Dokter Baru"}
-        size="md"
-        footer={
-          <>
-            <Button variant="ghost" onClick={closeForm}>Batal</Button>
-            <Button variant="primary" onClick={handleSave} type="submit" form="doctor-form">Simpan</Button>
-          </>
-        }
-      >
-        <form id="doctor-form" onSubmit={handleSave} className="space-y-4">
-          <Input
-            label="Nama Dokter"
-            required
-            value={form.nama}
-            onChange={(e) => setForm({ ...form, nama: e.target.value })}
-          />
-          <div className="grid grid-cols-2 gap-4">
+      {/* ─── Shadcn Dialog — Add / Edit Dokter ─── */}
+      <Dialog open={showForm} onOpenChange={(open) => !open && closeForm()}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{isEdit ? "Edit Data Dokter" : "Tambah Dokter Baru"}</DialogTitle>
+          </DialogHeader>
+
+          <form id="doctor-form" onSubmit={handleSave} className="space-y-4 py-2">
             <Input
-              label="Spesialis"
-              required
-              value={form.spesialis}
-              onChange={(e) => setForm({ ...form, spesialis: e.target.value })}
+              label="Nama Dokter" required
+              value={form.nama}
+              onChange={(e) => setForm({ ...form, nama: e.target.value })}
             />
+            <div className="grid grid-cols-2 gap-4">
+              {/* ─── Shadcn Combobox — Pilih Spesialis ─── */}
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-semibold text-gray-700">Spesialis</label>
+                <Combobox
+                  value={form.spesialis}
+                  onValueChange={(val) => setForm({ ...form, spesialis: val })}
+                >
+                  <ComboboxInput placeholder="Cari / ketik spesialis..." showClear={!!form.spesialis} />
+                  <ComboboxContent>
+                    <ComboboxList>
+                      <ComboboxEmpty>Tidak ditemukan. Ketik manual.</ComboboxEmpty>
+                      {spesialisList.map((s) => (
+                        <ComboboxItem key={s} value={s}>{s}</ComboboxItem>
+                      ))}
+                    </ComboboxList>
+                  </ComboboxContent>
+                </Combobox>
+              </div>
+              <Input
+                label="Nomor HP" required
+                value={form.noHp}
+                onChange={(e) => setForm({ ...form, noHp: e.target.value })}
+              />
+            </div>
             <Input
-              label="Nomor HP"
-              required
-              value={form.noHp}
-              onChange={(e) => setForm({ ...form, noHp: e.target.value })}
+              label="Email" type="email" required
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
-          </div>
-          <Input
-            label="Email"
-            type="email"
-            required
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-          />
-          <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="Jadwal Praktik"
-              required
-              value={form.jadwal}
-              onChange={(e) => setForm({ ...form, jadwal: e.target.value })}
-            />
-            <Select
-              label="Status"
-              options={["Active", "Inactive"]}
-              value={form.status}
-              onChange={(e) => setForm({ ...form, status: e.target.value })}
-              placeholder={null}
-            />
-          </div>
-        </form>
-      </Modal>
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label="Jadwal Praktik" required
+                value={form.jadwal}
+                onChange={(e) => setForm({ ...form, jadwal: e.target.value })}
+              />
+              <Select
+                label="Status"
+                options={["Active", "Inactive"]}
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value })}
+                placeholder={null}
+              />
+            </div>
+          </form>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={closeForm}>Batal</Button>
+            <Button type="submit" form="doctor-form">Simpan</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

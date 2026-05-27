@@ -1,13 +1,18 @@
+import { useState, useEffect } from "react";
 import { FaUserFriends, FaCalendarCheck, FaUserMd, FaTooth, FaClock } from "react-icons/fa";
 import { useClinic } from "../../context/ClinicContext";
-import StatCard from "../../components/StatCard";
-import Badge from "../../components/Badge";
-import Card from "../../components/Card";
-import Avatar from "../../components/Avatar";
-import Table from "../../components/Table";
+
+// Custom UI components
+import StatCard    from "../../components/StatCard";
+import Badge       from "../../components/Badge";
+import Card        from "../../components/Card";
+import Avatar      from "../../components/Avatar";
+import Table       from "../../components/Table";
 import ProgressBar from "../../components/ProgressBar";
-import Tabs from "../../components/Tabs";
-import { useState } from "react";
+import Tabs        from "../../components/Tabs";
+
+// Shadcn UI — Skeleton (loading state tabel appointment)
+import { Skeleton } from "@/components/ui/skeleton";
 
 const STATUS_BADGE = {
   Active:    { variant: "success" },
@@ -16,13 +21,58 @@ const STATUS_BADGE = {
   Cancel:    { variant: "danger" },
 };
 
+// ─── Skeleton row untuk tabel appointment ────────────────────────────────────
+function AppointmentSkeleton() {
+  return (
+    <div className="divide-y divide-gray-50">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <div key={i} className="flex items-center gap-4 px-6 py-4">
+          {/* Jam */}
+          <Skeleton className="h-4 w-12 shrink-0" />
+          {/* Avatar + nama */}
+          <div className="flex items-center gap-3 flex-1">
+            <Skeleton className="h-8 w-8 rounded-full shrink-0" />
+            <Skeleton className="h-4 w-28" />
+          </div>
+          {/* Dokter */}
+          <Skeleton className="h-4 w-24 hidden md:block" />
+          {/* Treatment */}
+          <Skeleton className="h-4 w-20 hidden lg:block" />
+          {/* Badge status */}
+          <Skeleton className="h-5 w-16 rounded-full shrink-0" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Skeleton untuk stat cards ────────────────────────────────────────────────
+function StatCardSkeleton() {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5">
+      <Skeleton className="w-14 h-14 rounded-full shrink-0" />
+      <div className="flex-1 space-y-2">
+        <Skeleton className="h-3 w-24" />
+        <Skeleton className="h-7 w-12" />
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { patients, doctors } = useClinic();
-  const [activeTab, setActiveTab] = useState("appointments");
+  const [activeTab,  setActiveTab]  = useState("appointments");
+  const [isLoading,  setIsLoading]  = useState(true);
 
-  const totalPatients   = patients.length;
+  // Simulasi loading 1.5 detik saat pertama mount
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 1500);
+    return () => clearTimeout(t);
+  }, []);
+
+  const totalPatients     = patients.length;
   const appointmentsToday = patients.length;
-  const activeDoctors   = doctors.filter((d) => d.status === "Active").length;
+  const activeDoctors     = doctors.filter((d) => d.status === "Active").length;
 
   const treatmentCounts = patients.reduce((acc, p) => {
     if (p.treatment) acc[p.treatment] = (acc[p.treatment] || 0) + 1;
@@ -34,13 +84,12 @@ export default function Dashboard() {
 
   const maxCount = popularTreatments[0]?.count || 1;
 
-  // Kolom tabel appointment
   const appointmentColumns = [
-    { key: "jam",      label: "Jam" },
+    { key: "jam",   label: "Jam" },
     {
       key: "nama",
       label: "Pasien",
-      render: (val, row) => (
+      render: (val) => (
         <div className="flex items-center gap-3">
           <Avatar name={val} size="sm" />
           <span className="font-semibold text-gray-800">{val}</span>
@@ -96,33 +145,43 @@ export default function Dashboard() {
 
       <div className="px-0 relative -mt-14 z-20">
 
-        {/* Stat Cards */}
+        {/* ─── Stat Cards — Skeleton saat loading ─── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-          <StatCard
-            title="Total Patients"
-            value={totalPatients}
-            icon={<FaUserFriends />}
-            iconBg="bg-[#E8F8F6]"
-            iconColor="text-[#1A7C6E]"
-            trend={12}
-            trendLabel="bulan ini"
-          />
-          <StatCard
-            title="Appointments"
-            value={appointmentsToday}
-            icon={<FaCalendarCheck />}
-            iconBg="bg-blue-50"
-            iconColor="text-blue-600"
-            trend={5}
-            trendLabel="dari kemarin"
-          />
-          <StatCard
-            title="Active Doctors"
-            value={activeDoctors}
-            icon={<FaUserMd />}
-            iconBg="bg-purple-50"
-            iconColor="text-purple-600"
-          />
+          {isLoading ? (
+            <>
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+              <StatCardSkeleton />
+            </>
+          ) : (
+            <>
+              <StatCard
+                title="Total Patients"
+                value={totalPatients}
+                icon={<FaUserFriends />}
+                iconBg="bg-[#E8F8F6]"
+                iconColor="text-[#1A7C6E]"
+                trend={12}
+                trendLabel="bulan ini"
+              />
+              <StatCard
+                title="Appointments"
+                value={appointmentsToday}
+                icon={<FaCalendarCheck />}
+                iconBg="bg-blue-50"
+                iconColor="text-blue-600"
+                trend={5}
+                trendLabel="dari kemarin"
+              />
+              <StatCard
+                title="Active Doctors"
+                value={activeDoctors}
+                icon={<FaUserMd />}
+                iconBg="bg-purple-50"
+                iconColor="text-purple-600"
+              />
+            </>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -137,7 +196,6 @@ export default function Dashboard() {
                 </button>
               }
             >
-              {/* Tabs di dalam card header area */}
               <div className="px-6 pt-5 pb-0">
                 <Tabs
                   tabs={tabs}
@@ -148,16 +206,35 @@ export default function Dashboard() {
               </div>
 
               {activeTab === "appointments" && (
-                <Table
-                  columns={appointmentColumns}
-                  data={appointmentData}
-                  className="border-0 rounded-none shadow-none"
-                />
+                isLoading ? (
+                  /* ─── Shadcn Skeleton — loading tabel appointment ─── */
+                  <AppointmentSkeleton />
+                ) : (
+                  <Table
+                    columns={appointmentColumns}
+                    data={appointmentData}
+                    className="border-0 rounded-none shadow-none"
+                  />
+                )
               )}
 
               {activeTab === "treatments" && (
                 <div className="p-6 space-y-5">
-                  {popularTreatments.length > 0 ? (
+                  {isLoading ? (
+                    /* ─── Shadcn Skeleton — loading treatment list ─── */
+                    Array.from({ length: 3 }).map((_, i) => (
+                      <div key={i} className="flex items-center gap-4">
+                        <Skeleton className="w-9 h-9 rounded-xl shrink-0" />
+                        <div className="flex-1 space-y-2">
+                          <div className="flex justify-between">
+                            <Skeleton className="h-4 w-32" />
+                            <Skeleton className="h-4 w-6" />
+                          </div>
+                          <Skeleton className="h-1.5 w-full rounded-full" />
+                        </div>
+                      </div>
+                    ))
+                  ) : popularTreatments.length > 0 ? (
                     popularTreatments.map((t, idx) => (
                       <div key={idx} className="flex items-center gap-4">
                         <div className="w-9 h-9 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center shrink-0">
@@ -191,50 +268,74 @@ export default function Dashboard() {
             {/* Active Doctors */}
             <Card title="Active Doctors" padding="md">
               <div className="space-y-3 mt-1">
-                {doctors.filter((d) => d.status === "Active").map((d) => (
-                  <div
-                    key={d.id}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-gray-50 hover:bg-gray-50 transition cursor-pointer"
-                  >
-                    <Avatar
-                      name={d.nama.replace("drg. ", "")}
-                      size="md"
-                      color="bg-purple-50 text-purple-600"
-                      status="online"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-gray-800 truncate text-sm">{d.nama}</h4>
-                      <p className="text-xs text-gray-400 font-medium mt-0.5">{d.spesialis}</p>
+                {isLoading ? (
+                  /* ─── Shadcn Skeleton — loading doctor list ─── */
+                  Array.from({ length: 2 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-gray-50">
+                      <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+                      <div className="flex-1 space-y-1.5">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-20" />
+                      </div>
+                      <Skeleton className="h-5 w-14 rounded-md shrink-0" />
                     </div>
-                    <div className="text-[10px] font-bold text-[#1A7C6E] bg-[#E8F8F6] px-2 py-1 rounded-md flex items-center gap-1 shrink-0">
-                      <FaClock className="text-[9px]" /> 08:00
+                  ))
+                ) : (
+                  doctors.filter((d) => d.status === "Active").map((d) => (
+                    <div
+                      key={d.id}
+                      className="flex items-center gap-3 p-3 rounded-xl border border-gray-50 hover:bg-gray-50 transition cursor-pointer"
+                    >
+                      <Avatar
+                        name={d.nama.replace("drg. ", "")}
+                        size="md"
+                        color="bg-purple-50 text-purple-600"
+                        status="online"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-gray-800 truncate text-sm">{d.nama}</h4>
+                        <p className="text-xs text-gray-400 font-medium mt-0.5">{d.spesialis}</p>
+                      </div>
+                      <div className="text-[10px] font-bold text-[#1A7C6E] bg-[#E8F8F6] px-2 py-1 rounded-md flex items-center gap-1 shrink-0">
+                        <FaClock className="text-[9px]" /> 08:00
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </Card>
 
             {/* Patient Status Summary */}
             <Card title="Patient Status" padding="md">
               <div className="space-y-3 mt-1">
-                {[
-                  { label: "Active",    color: "green",  variant: "success" },
-                  { label: "Waiting",   color: "yellow", variant: "warning" },
-                  { label: "Completed", color: "teal",   variant: "teal" },
-                  { label: "Cancel",    color: "red",    variant: "danger" },
-                ].map(({ label, color, variant }) => {
-                  const count = patients.filter((p) => p.status === label).length;
-                  const pct   = totalPatients > 0 ? Math.round((count / totalPatients) * 100) : 0;
-                  return (
-                    <div key={label} className="flex items-center gap-3">
-                      <Badge variant={variant} className="w-20 justify-center shrink-0">{label}</Badge>
-                      <div className="flex-1">
-                        <ProgressBar value={pct} showValue={false} color={color} size="sm" />
-                      </div>
-                      <span className="text-xs font-bold text-gray-600 w-6 text-right shrink-0">{count}</span>
+                {isLoading ? (
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <Skeleton className="h-5 w-20 rounded-full shrink-0" />
+                      <Skeleton className="h-1.5 flex-1 rounded-full" />
+                      <Skeleton className="h-4 w-4 shrink-0" />
                     </div>
-                  );
-                })}
+                  ))
+                ) : (
+                  [
+                    { label: "Active",    color: "green",  variant: "success" },
+                    { label: "Waiting",   color: "yellow", variant: "warning" },
+                    { label: "Completed", color: "teal",   variant: "teal" },
+                    { label: "Cancel",    color: "red",    variant: "danger" },
+                  ].map(({ label, color, variant }) => {
+                    const count = patients.filter((p) => p.status === label).length;
+                    const pct   = totalPatients > 0 ? Math.round((count / totalPatients) * 100) : 0;
+                    return (
+                      <div key={label} className="flex items-center gap-3">
+                        <Badge variant={variant} className="w-20 justify-center shrink-0">{label}</Badge>
+                        <div className="flex-1">
+                          <ProgressBar value={pct} showValue={false} color={color} size="sm" />
+                        </div>
+                        <span className="text-xs font-bold text-gray-600 w-6 text-right shrink-0">{count}</span>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </Card>
 

@@ -142,9 +142,7 @@ export default function Sidebar() {
             )}
           </NavLink>
 
-        </nav>
-
-        {/* CARD */}
+        </nav>        {/* CARD */}
         <div className="mt-10 bg-gradient-to-br from-[#0F766E] to-[#14B8A6] rounded-2xl p-5 text-white relative overflow-hidden">
 
           {/* BACKGROUND CIRCLE */}
