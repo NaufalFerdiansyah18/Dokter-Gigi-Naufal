@@ -42,8 +42,29 @@ import {
 } from "@/components/ui/combobox";
 
 const EMPTY_FORM = {
-  nama: "", umur: "", jenisKelamin: "L", noHp: "",
-  alamat: "", treatment: "", dokter: "", status: "Active",
+  nama: "",
+  umur: "",
+  jenisKelamin: "L",
+  noHp: "",
+  alamat: "",
+  treatment: "Scaling",
+  dokter: "",
+  status: "Active",
+  // New fields
+  tanggalLahir: "",
+  email: "",
+  kotaProvinsi: "",
+  tanggalDaftar: new Date().toISOString().split("T")[0],
+  statusMember: "Regular",
+  levelMembership: "Bronze",
+  statusAktif: true,
+  catatanAdmin: "",
+  loginTerakhir: "",
+  deviceDigunakan: "",
+  durasiPenggunaan: "",
+  sumberUser: "",
+  campaignDiikuti: "",
+  statusPromo: "Tidak Aktif",
 };
 
 const STATUS_BADGE = {
@@ -86,11 +107,19 @@ export default function Pasien() {
 
   const handleSave = (e) => {
     e.preventDefault();
+    const formattedCampaigns = form.campaignDiikuti
+      ? form.campaignDiikuti.split(",").map(c => c.trim()).filter(Boolean)
+      : [];
+    const savedData = {
+      ...form,
+      jenisPerawatan: form.treatment,
+      campaignDiikuti: formattedCampaigns,
+    };
     if (isEdit) {
-      setData(data.map((p) => (p.id === form.id ? { ...p, ...form } : p)));
+      setData(data.map((p) => (p.id === form.id ? { ...p, ...savedData } : p)));
     } else {
       setData([
-        { ...form, id: `PS-${String(data.length + 1).padStart(3, "0")}`, terakhirKunjungan: "-" },
+        { ...savedData, id: `PS-${String(data.length + 1).padStart(3, "0")}`, terakhirKunjungan: new Date().toISOString().split("T")[0] },
         ...data,
       ]);
     }
@@ -107,9 +136,29 @@ export default function Pasien() {
 
   const openEdit = (p) => {
     setForm({
-      id: p.id, nama: p.nama, umur: p.umur, jenisKelamin: p.jenisKelamin,
-      noHp: p.noHp, alamat: p.alamat, treatment: p.treatment || "",
-      dokter: p.dokter || "", status: p.status,
+      id: p.id,
+      nama: p.nama,
+      umur: p.umur,
+      jenisKelamin: p.jenisKelamin,
+      noHp: p.noHp,
+      alamat: p.alamat,
+      treatment: p.treatment || p.jenisPerawatan || "Scaling",
+      dokter: p.dokter || "",
+      status: p.status,
+      tanggalLahir: p.tanggalLahir || "",
+      email: p.email || "",
+      kotaProvinsi: p.kotaProvinsi || "",
+      tanggalDaftar: p.tanggalDaftar || "",
+      statusMember: p.statusMember || "Regular",
+      levelMembership: p.levelMembership || "Bronze",
+      statusAktif: p.statusAktif !== undefined ? p.statusAktif : true,
+      catatanAdmin: p.catatanAdmin || "",
+      loginTerakhir: p.loginTerakhir || "",
+      deviceDigunakan: p.deviceDigunakan || "",
+      durasiPenggunaan: p.durasiPenggunaan || "",
+      sumberUser: p.sumberUser || "",
+      campaignDiikuti: Array.isArray(p.campaignDiikuti) ? p.campaignDiikuti.join(", ") : (p.campaignDiikuti || ""),
+      statusPromo: p.statusPromo || "Tidak Aktif",
     });
     setIsEdit(true);
     setShowForm(true);
@@ -256,97 +305,237 @@ export default function Pasien() {
 
       {/* ─── Shadcn Dialog — Add / Edit Pasien ─── */}
       <Dialog open={showForm} onOpenChange={(open) => !open && closeForm()}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>
               {isEdit ? "Edit Data Pasien" : "Tambah Pasien Baru"}
             </DialogTitle>
           </DialogHeader>
 
-          <form id="pasien-form" onSubmit={handleSave} className="space-y-4 py-2">
-            <Input
-              label="Nama Pasien"
-              required
-              value={form.nama}
-              onChange={(e) => setForm({ ...form, nama: e.target.value })}
-            />
-            <div className="grid grid-cols-2 gap-4">
+          <form id="pasien-form" onSubmit={handleSave} className="space-y-6 py-2 max-h-[75vh] overflow-y-auto pr-3">
+            
+            {/* SECTION 1: IDENTITAS & KONTAK */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold text-[#1A7C6E] border-b pb-1">1. Identitas & Kontak</h3>
               <Input
-                label="Umur"
-                type="number"
+                label="Nama Lengkap"
                 required
-                value={form.umur}
-                onChange={(e) => setForm({ ...form, umur: e.target.value })}
+                value={form.nama}
+                onChange={(e) => setForm({ ...form, nama: e.target.value })}
               />
-              <Select
-                label="Jenis Kelamin"
-                options={[{ value: "L", label: "Laki-laki" }, { value: "P", label: "Perempuan" }]}
-                value={form.jenisKelamin}
-                onChange={(e) => setForm({ ...form, jenisKelamin: e.target.value })}
-                placeholder={null}
-              />
-            </div>
-            <Input
-              label="Nomor HP"
-              required
-              value={form.noHp}
-              onChange={(e) => setForm({ ...form, noHp: e.target.value })}
-            />
-            <Input
-              label="Alamat"
-              value={form.alamat}
-              onChange={(e) => setForm({ ...form, alamat: e.target.value })}
-            />
-            <Input
-              label="Treatment"
-              value={form.treatment}
-              onChange={(e) => setForm({ ...form, treatment: e.target.value })}
-            />
-
-            {/* ─── Shadcn Combobox — Pilih Dokter ─── */}
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-semibold text-gray-700">
-                Pilih Dokter
-              </label>
-              <Combobox
-                value={form.dokter}
-                onValueChange={(val) => setForm({ ...form, dokter: val })}
-              >
-                <ComboboxInput
-                  placeholder="Cari nama dokter..."
-                  showClear={!!form.dokter}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Input
+                  label="Umur"
+                  type="number"
+                  required
+                  value={form.umur}
+                  onChange={(e) => setForm({ ...form, umur: e.target.value })}
                 />
-                <ComboboxContent>
-                  <ComboboxList>
-                    <ComboboxEmpty>Dokter tidak ditemukan.</ComboboxEmpty>
-                    {doctors.map((d) => (
-                      <ComboboxItem key={d.id} value={d.nama}>
-                        <div className="flex items-center gap-2">
-                          <Avatar name={d.nama.replace("drg. ", "")} size="xs" color="bg-[#E8F8F6] text-[#1A7C6E]" />
-                          <div>
-                            <p className="text-sm font-medium">{d.nama}</p>
-                            <p className="text-xs text-gray-400">{d.spesialis}</p>
-                          </div>
-                        </div>
-                      </ComboboxItem>
-                    ))}
-                  </ComboboxList>
-                </ComboboxContent>
-              </Combobox>
-              {form.dokter && (
-                <p className="text-xs text-[#1A7C6E] font-medium mt-0.5">
-                  ✓ Dipilih: {form.dokter}
-                </p>
-              )}
+                <Select
+                  label="Jenis Kelamin"
+                  options={[{ value: "L", label: "Laki-laki" }, { value: "P", label: "Perempuan" }]}
+                  value={form.jenisKelamin}
+                  onChange={(e) => setForm({ ...form, jenisKelamin: e.target.value })}
+                  placeholder={null}
+                />
+                <Input
+                  label="Tanggal Lahir"
+                  type="date"
+                  value={form.tanggalLahir}
+                  onChange={(e) => setForm({ ...form, tanggalLahir: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input
+                  label="Nomor HP"
+                  required
+                  value={form.noHp}
+                  onChange={(e) => setForm({ ...form, noHp: e.target.value })}
+                />
+                <Input
+                  label="Email"
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input
+                  label="Alamat"
+                  value={form.alamat}
+                  onChange={(e) => setForm({ ...form, alamat: e.target.value })}
+                />
+                <Input
+                  label="Kota/Provinsi"
+                  value={form.kotaProvinsi}
+                  onChange={(e) => setForm({ ...form, kotaProvinsi: e.target.value })}
+                />
+              </div>
             </div>
 
-            <Select
-              label="Status"
-              options={["Active", "Waiting", "Completed", "Cancel"]}
-              value={form.status}
-              onChange={(e) => setForm({ ...form, status: e.target.value })}
-              placeholder={null}
-            />
+            {/* SECTION 2: AKUN / MEMBERSHIP */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold text-[#1A7C6E] border-b pb-1">2. Data Akun / Membership</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input
+                  label="Tanggal Daftar"
+                  type="date"
+                  value={form.tanggalDaftar}
+                  onChange={(e) => setForm({ ...form, tanggalDaftar: e.target.value })}
+                />
+                <Select
+                  label="Status Member"
+                  options={["Regular", "Premium"]}
+                  value={form.statusMember}
+                  onChange={(e) => setForm({ ...form, statusMember: e.target.value })}
+                  placeholder={null}
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Select
+                  label="Level Membership"
+                  options={["Bronze", "Silver", "Gold", "Platinum"]}
+                  value={form.levelMembership}
+                  onChange={(e) => setForm({ ...form, levelMembership: e.target.value })}
+                  placeholder={null}
+                />
+                <Select
+                  label="Status Aktif"
+                  options={[
+                    { value: "true", label: "Aktif" },
+                    { value: "false", label: "Nonaktif" }
+                  ]}
+                  value={String(form.statusAktif)}
+                  onChange={(e) => setForm({ ...form, statusAktif: e.target.value === "true" })}
+                  placeholder={null}
+                />
+              </div>
+            </div>
+
+            {/* SECTION 3: AKTIVITAS USER */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold text-[#1A7C6E] border-b pb-1">3. Aktivitas User</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Input
+                  label="Login Terakhir"
+                  type="datetime-local"
+                  value={form.loginTerakhir}
+                  onChange={(e) => setForm({ ...form, loginTerakhir: e.target.value })}
+                />
+                <Input
+                  label="Device yang Digunakan"
+                  placeholder="Contoh: Android - Samsung S23"
+                  value={form.deviceDigunakan}
+                  onChange={(e) => setForm({ ...form, deviceDigunakan: e.target.value })}
+                />
+                <Input
+                  label="Durasi Penggunaan"
+                  placeholder="Contoh: 45 menit"
+                  value={form.durasiPenggunaan}
+                  onChange={(e) => setForm({ ...form, durasiPenggunaan: e.target.value })}
+                />
+              </div>
+            </div>
+
+            {/* SECTION 4: MARKETING & ENGAGEMENT */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold text-[#1A7C6E] border-b pb-1">4. Marketing & Engagement</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Input
+                  label="Sumber User"
+                  placeholder="Contoh: Instagram, Google"
+                  value={form.sumberUser}
+                  onChange={(e) => setForm({ ...form, sumberUser: e.target.value })}
+                />
+                <Input
+                  label="Campaign yang Diikuti"
+                  placeholder="Pisahkan dengan koma"
+                  value={form.campaignDiikuti}
+                  onChange={(e) => setForm({ ...form, campaignDiikuti: e.target.value })}
+                />
+                <Select
+                  label="Status Promo"
+                  options={["Aktif", "Tidak Aktif"]}
+                  value={form.statusPromo}
+                  onChange={(e) => setForm({ ...form, statusPromo: e.target.value })}
+                  placeholder={null}
+                />
+              </div>
+            </div>
+
+            {/* SECTION 5: DATA TRANSAKSI & PERAWATAN */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-bold text-[#1A7C6E] border-b pb-1">5. Data Transaksi & Perawatan</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Select
+                  label="Jenis Perawatan (Treatment)"
+                  options={[
+                    "Scaling",
+                    "Tambal Gigi",
+                    "Cabut Gigi",
+                    "Behel",
+                    "Whitening",
+                    "Veneer",
+                    "Konsultasi",
+                    "Perawatan Saluran Akar"
+                  ]}
+                  value={form.treatment}
+                  onChange={(e) => setForm({ ...form, treatment: e.target.value })}
+                  placeholder={null}
+                />
+                <Select
+                  label="Status Pasien"
+                  options={["Active", "Waiting", "Completed", "Cancel"]}
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                  placeholder={null}
+                />
+              </div>
+
+              {/* ─── Shadcn Combobox — Pilih Dokter ─── */}
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-semibold text-gray-700">
+                  Pilih Dokter
+                </label>
+                <Combobox
+                  value={form.dokter}
+                  onValueChange={(val) => setForm({ ...form, dokter: val })}
+                >
+                  <ComboboxInput
+                    placeholder="Cari nama dokter..."
+                    showClear={!!form.dokter}
+                  />
+                  <ComboboxContent>
+                    <ComboboxList>
+                      <ComboboxEmpty>Dokter tidak ditemukan.</ComboboxEmpty>
+                      {doctors.map((d) => (
+                        <ComboboxItem key={d.id} value={d.nama}>
+                          <div className="flex items-center gap-2">
+                            <Avatar name={d.nama.replace("drg. ", "")} size="xs" color="bg-[#E8F8F6] text-[#1A7C6E]" />
+                            <div>
+                              <p className="text-sm font-medium">{d.nama}</p>
+                              <p className="text-xs text-gray-400">{d.spesialis}</p>
+                            </div>
+                          </div>
+                        </ComboboxItem>
+                      ))}
+                    </ComboboxList>
+                  </ComboboxContent>
+                </Combobox>
+                {form.dokter && (
+                  <p className="text-xs text-[#1A7C6E] font-medium mt-0.5">
+                    ✓ Dipilih: {form.dokter}
+                  </p>
+                )}
+              </div>
+
+              <Input
+                label="Catatan Admin"
+                value={form.catatanAdmin}
+                onChange={(e) => setForm({ ...form, catatanAdmin: e.target.value })}
+              />
+            </div>
+
           </form>
 
           <DialogFooter>

@@ -1,44 +1,39 @@
 import { useState, useEffect } from "react";
-import { FaUserFriends, FaCalendarCheck, FaUserMd, FaTooth, FaClock } from "react-icons/fa";
+import { FaUserFriends, FaCalendarCheck, FaUserMd, FaTooth, FaClock, FaWhatsapp } from "react-icons/fa";
 import { useClinic } from "../../context/ClinicContext";
 
 // Custom UI components
-import StatCard    from "../../components/StatCard";
-import Badge       from "../../components/Badge";
-import Card        from "../../components/Card";
-import Avatar      from "../../components/Avatar";
-import Table       from "../../components/Table";
+import StatCard from "../../components/StatCard";
+import Badge from "../../components/Badge";
+import Card from "../../components/Card";
+import Avatar from "../../components/Avatar";
+import Table from "../../components/Table";
 import ProgressBar from "../../components/ProgressBar";
-import Tabs        from "../../components/Tabs";
+import Tabs from "../../components/Tabs";
+import Alert from "../../components/Alert";
 
 // Shadcn UI — Skeleton (loading state tabel appointment)
 import { Skeleton } from "@/components/ui/skeleton";
 
 const STATUS_BADGE = {
-  Active:    { variant: "success" },
+  Active: { variant: "success" },
   Completed: { variant: "teal" },
-  Waiting:   { variant: "warning" },
-  Cancel:    { variant: "danger" },
+  Waiting: { variant: "warning" },
+  Cancel: { variant: "danger" },
 };
 
-// ─── Skeleton row untuk tabel appointment ────────────────────────────────────
 function AppointmentSkeleton() {
   return (
     <div className="divide-y divide-gray-50">
       {Array.from({ length: 5 }).map((_, i) => (
         <div key={i} className="flex items-center gap-4 px-6 py-4">
-          {/* Jam */}
           <Skeleton className="h-4 w-12 shrink-0" />
-          {/* Avatar + nama */}
           <div className="flex items-center gap-3 flex-1">
             <Skeleton className="h-8 w-8 rounded-full shrink-0" />
             <Skeleton className="h-4 w-28" />
           </div>
-          {/* Dokter */}
           <Skeleton className="h-4 w-24 hidden md:block" />
-          {/* Treatment */}
           <Skeleton className="h-4 w-20 hidden lg:block" />
-          {/* Badge status */}
           <Skeleton className="h-5 w-16 rounded-full shrink-0" />
         </div>
       ))}
@@ -46,7 +41,6 @@ function AppointmentSkeleton() {
   );
 }
 
-// ─── Skeleton untuk stat cards ────────────────────────────────────────────────
 function StatCardSkeleton() {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5">
@@ -61,18 +55,26 @@ function StatCardSkeleton() {
 
 export default function Dashboard() {
   const { patients, doctors } = useClinic();
-  const [activeTab,  setActiveTab]  = useState("appointments");
-  const [isLoading,  setIsLoading]  = useState(true);
+  const [activeTab, setActiveTab] = useState("appointments");
+  const [isLoading, setIsLoading] = useState(true);
+  const [reminderSent, setReminderSent] = useState(null);
+
+  const handleSendReminder = (patientName, noHp) => {
+    setReminderSent(`Reminder kontrol gigi berhasil dikirim ke WhatsApp ${patientName} (${noHp})!`);
+    setTimeout(() => {
+      setReminderSent(null);
+    }, 4000);
+  };
 
   // Simulasi loading 1.5 detik saat pertama mount
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 1500);
+    const t = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(t);
   }, []);
 
-  const totalPatients     = patients.length;
+  const totalPatients = patients.length;
   const appointmentsToday = patients.length;
-  const activeDoctors     = doctors.filter((d) => d.status === "Active").length;
+  const activeDoctors = doctors.filter((d) => d.status === "Active").length;
 
   const treatmentCounts = patients.reduce((acc, p) => {
     if (p.treatment) acc[p.treatment] = (acc[p.treatment] || 0) + 1;
@@ -85,7 +87,7 @@ export default function Dashboard() {
   const maxCount = popularTreatments[0]?.count || 1;
 
   const appointmentColumns = [
-    { key: "jam",   label: "Jam" },
+    { key: "jam", label: "Jam" },
     {
       key: "nama",
       label: "Pasien",
@@ -96,7 +98,7 @@ export default function Dashboard() {
         </div>
       ),
     },
-    { key: "dokter",    label: "Dokter" },
+    { key: "dokter", label: "Dokter" },
     { key: "treatment", label: "Treatment" },
     {
       key: "status",
@@ -109,17 +111,17 @@ export default function Dashboard() {
   ];
 
   const appointmentData = patients.slice(0, 5).map((p, idx) => ({
-    id:        p.id,
-    jam:       `09:${String(idx * 10).padStart(2, "0")}`,
-    nama:      p.nama,
-    dokter:    p.dokter || "-",
+    id: p.id,
+    jam: `09:${String(idx * 10).padStart(2, "0")}`,
+    nama: p.nama,
+    dokter: p.dokter || "-",
     treatment: p.treatment || "-",
-    status:    p.status,
+    status: p.status,
   }));
 
   const tabs = [
     { key: "appointments", label: "Appointments", badge: patients.slice(0, 5).length },
-    { key: "treatments",   label: "Treatments",   badge: popularTreatments.length },
+    { key: "treatments", label: "Treatments", badge: popularTreatments.length },
   ];
 
   return (
@@ -144,6 +146,14 @@ export default function Dashboard() {
       </div>
 
       <div className="px-0 relative -mt-14 z-20">
+
+        {reminderSent && (
+          <div className="mb-6">
+            <Alert variant="success" title="WhatsApp Terkirim!" dismissible onDismiss={() => setReminderSent(null)}>
+              {reminderSent}
+            </Alert>
+          </div>
+        )}
 
         {/* ─── Stat Cards — Skeleton saat loading ─── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
@@ -265,6 +275,44 @@ export default function Dashboard() {
           {/* Kanan */}
           <div className="space-y-6">
 
+            {/* Reminder Kontrol Gigi */}
+            <Card title="Reminder Kontrol Gigi" padding="md">
+              <div className="space-y-3 mt-1">
+                {isLoading ? (
+                  Array.from({ length: 2 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-gray-50">
+                      <Skeleton className="w-10 h-10 rounded-full shrink-0" />
+                      <div className="flex-1 space-y-1.5">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-20" />
+                      </div>
+                      <Skeleton className="h-6 w-12 rounded-md shrink-0" />
+                    </div>
+                  ))
+                ) : (
+                  patients.filter((p) => p.jadwalKontrol).map((p) => (
+                    <div
+                      key={p.id}
+                      className="flex items-center justify-between gap-3 p-3 rounded-xl border border-gray-50 hover:bg-gray-50 transition"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-gray-800 truncate text-sm">{p.nama}</h4>
+                        <p className="text-xs text-[#1A7C6E] font-medium mt-0.5">{p.jadwalKontrol.tanggal}</p>
+                        <p className="text-[10px] text-gray-400 truncate mt-0.5">{p.jadwalKontrol.keterangan}</p>
+                      </div>
+                      <button
+                        onClick={() => handleSendReminder(p.nama, p.noHp)}
+                        className="p-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg text-xs flex items-center justify-center shrink-0 transition"
+                        title="Kirim Reminder WhatsApp"
+                      >
+                        <FaWhatsapp className="text-base" />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </Card>
+
             {/* Active Doctors */}
             <Card title="Active Doctors" padding="md">
               <div className="space-y-3 mt-1">
@@ -318,13 +366,13 @@ export default function Dashboard() {
                   ))
                 ) : (
                   [
-                    { label: "Active",    color: "green",  variant: "success" },
-                    { label: "Waiting",   color: "yellow", variant: "warning" },
-                    { label: "Completed", color: "teal",   variant: "teal" },
-                    { label: "Cancel",    color: "red",    variant: "danger" },
+                    { label: "Active", color: "green", variant: "success" },
+                    { label: "Waiting", color: "yellow", variant: "warning" },
+                    { label: "Completed", color: "teal", variant: "teal" },
+                    { label: "Cancel", color: "red", variant: "danger" },
                   ].map(({ label, color, variant }) => {
                     const count = patients.filter((p) => p.status === label).length;
-                    const pct   = totalPatients > 0 ? Math.round((count / totalPatients) * 100) : 0;
+                    const pct = totalPatients > 0 ? Math.round((count / totalPatients) * 100) : 0;
                     return (
                       <div key={label} className="flex items-center gap-3">
                         <Badge variant={variant} className="w-20 justify-center shrink-0">{label}</Badge>

@@ -6,6 +6,7 @@ import {
   FaLock,
   FaBan,
   FaTooth,
+  FaComments,
 } from "react-icons/fa";
 
 import { MdSpaceDashboard } from "react-icons/md";
@@ -94,6 +95,17 @@ export default function Sidebar() {
                   className={`text-base mr-3 ${iconClass({ isActive })}`}
                 />
                 <span>Patients</span>
+              </>
+            )}
+          </NavLink>
+
+          <NavLink to="/chat-admin" className={menuClass}>
+            {({ isActive }) => (
+              <>
+                <FaComments
+                  className={`text-base mr-3 ${iconClass({ isActive })}`}
+                />
+                <span>Chat Admin</span>
               </>
             )}
           </NavLink>

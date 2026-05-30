@@ -8,18 +8,18 @@ import {
 import { useClinic } from "../../context/ClinicContext";
 
 // Custom UI components
-import Badge    from "../../components/Badge";
-import Avatar   from "../../components/Avatar";
-import Card     from "../../components/Card";
-import Table    from "../../components/Table";
-import Input    from "../../components/Input";
-import Select   from "../../components/Select";
+import Badge from "../../components/Badge";
+import Avatar from "../../components/Avatar";
+import Card from "../../components/Card";
+import Table from "../../components/Table";
+import Input from "../../components/Input";
+import Select from "../../components/Select";
 import StatCard from "../../components/StatCard";
-import Tooltip  from "../../components/Tooltip";
-import Alert    from "../../components/Alert";
+import Tooltip from "../../components/Tooltip";
+import Alert from "../../components/Alert";
 
 // Shadcn UI
-import { Button }   from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -83,21 +83,21 @@ function TableSkeleton({ rows = 5, cols = 6 }) {
 export default function Doctors() {
   const { doctors, setDoctors, patients } = useClinic();
 
-  const [searchTerm,   setSearchTerm]   = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-  const [showForm,     setShowForm]     = useState(false);
-  const [form,         setForm]         = useState(EMPTY_FORM);
-  const [isEdit,       setIsEdit]       = useState(false);
-  const [savedAlert,   setSavedAlert]   = useState(false);
-  const [isLoading,    setIsLoading]    = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [isEdit, setIsEdit] = useState(false);
+  const [savedAlert, setSavedAlert] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const t = setTimeout(() => setIsLoading(false), 1200);
+    const t = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(t);
   }, []);
 
-  const totalDokter      = doctors.length;
-  const dokterAktif      = doctors.filter((d) => d.status === "Active").length;
+  const totalDokter = doctors.length;
+  const dokterAktif = doctors.filter((d) => d.status === "Active").length;
   const treatmentHariIni = 12;
 
   const filteredDoctors = useMemo(() => {
@@ -131,8 +131,8 @@ export default function Doctors() {
     }
   };
 
-  const openEdit  = (d) => { setForm(d); setIsEdit(true); setShowForm(true); };
-  const closeForm = ()  => { setForm(EMPTY_FORM); setIsEdit(false); setShowForm(false); };
+  const openEdit = (d) => { setForm(d); setIsEdit(true); setShowForm(true); };
+  const closeForm = () => { setForm(EMPTY_FORM); setIsEdit(false); setShowForm(false); };
 
   // Spesialis unik untuk Combobox
   const spesialisList = [...new Set(doctors.map((d) => d.spesialis))];
@@ -154,7 +154,7 @@ export default function Doctors() {
       ),
     },
     { key: "spesialis", label: "Spesialis" },
-    { key: "jadwal",    label: "Jadwal" },
+    { key: "jadwal", label: "Jadwal" },
     {
       key: "totalPasien",
       label: "Total Pasien",
@@ -234,8 +234,8 @@ export default function Doctors() {
             <><StatCardSkeleton /><StatCardSkeleton /><StatCardSkeleton /></>
           ) : (
             <>
-              <StatCard title="Total Dokter"       value={totalDokter}      icon={<FaUserMd />}        iconBg="bg-[#E8F8F6]" iconColor="text-[#1A7C6E]" />
-              <StatCard title="Dokter Aktif"       value={dokterAktif}      icon={<FaStethoscope />}   iconBg="bg-blue-50"   iconColor="text-blue-600" />
+              <StatCard title="Total Dokter" value={totalDokter} icon={<FaUserMd />} iconBg="bg-[#E8F8F6]" iconColor="text-[#1A7C6E]" />
+              <StatCard title="Dokter Aktif" value={dokterAktif} icon={<FaStethoscope />} iconBg="bg-blue-50" iconColor="text-blue-600" />
               <StatCard title="Treatment Hari Ini" value={treatmentHariIni} icon={<FaCalendarCheck />} iconBg="bg-purple-50" iconColor="text-purple-600" />
             </>
           )}
@@ -254,8 +254,8 @@ export default function Doctors() {
             />
             <Select
               options={[
-                { value: "",         label: "Semua Status" },
-                { value: "Active",   label: "Active" },
+                { value: "", label: "Semua Status" },
+                { value: "Active", label: "Active" },
                 { value: "Inactive", label: "Inactive" },
               ]}
               value={filterStatus}

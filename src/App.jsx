@@ -25,6 +25,7 @@ const Error401 = React.lazy(() => import("./assets/pertemuan-5/pages/main/Error4
 const Error403 = React.lazy(() => import("./assets/pertemuan-5/pages/main/Error403"))
 const PatientDetail = React.lazy(() => import("./assets/pertemuan-5/pages/main/PatientDetail"))
 const DoctorDetail = React.lazy(() => import("./assets/pertemuan-5/pages/main/DoctorDetail"))
+const ChatAdmin = React.lazy(() => import("./assets/pertemuan-5/pages/main/ChatAdmin"));
 
 
 
@@ -51,6 +52,7 @@ function App() {
             <Route path="/doctors/:id" element={<DoctorDetail />} />
             <Route path="/pasien" element={<Pasien />} />
             <Route path="/pasien/:id" element={<PatientDetail />} />
+            <Route path="/chat-admin" element={<ChatAdmin />} />
             <Route path="/error-400" element={<Error400 />} />
             <Route path="/error-401" element={<Error401 />} />
             <Route path="/error-403" element={<Error403 />} />

@@ -61,5 +61,8 @@ export const STATUS_CONFIG = {
 };
 
 export const LOYALTY_CONFIG = {
-
+  Bronze: 0.05,   // 5% discount
+  Silver: 0.10,   // 10% discount
+  Gold: 0.15,     // 15% discount
+  Platinum: 0.20, // 20% discount
 };
