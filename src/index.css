@@ -34,6 +34,22 @@ a {
   text-decoration: none;
 }
 
+a[style*="color"] {
+  color: revert;
+}
+
+.btn-hubungi {
+  color: #111827 !important;
+}
+
+.btn-kirim-pesan {
+  color: #ffffff !important;
+}
+
+.btn-kirim-pesan:disabled {
+  color: #6b7280 !important;
+}
+
 *,
 *::before,
 *::after {

@@ -1,5 +1,68 @@
 import React, { createContext, useContext, useState } from "react";
 
+const INITIAL_CAMPAIGNS = [
+  {
+    id: "CP-001",
+    judul: "Promo Scaling Gratis",
+    deskripsi: "Dapatkan scaling gigi GRATIS untuk pasien baru yang mendaftar bulan ini. Syarat & ketentuan berlaku.",
+    badge: "Gratis",
+    warna: "from-teal-500 to-teal-700",
+    icon: "🦷",
+    berlakuHingga: "2026-06-30",
+    status: "Aktif",
+    targetMembership: ["Semua"],
+    syarat: ["Pasien baru pertama kali", "Berlaku 1x per pasien", "Wajib daftar akun terlebih dahulu"],
+  },
+  {
+    id: "CP-002",
+    judul: "Member Referral Bonus",
+    deskripsi: "Ajak teman dan dapatkan diskon 20% untuk perawatan berikutnya. Teman yang diajak juga dapat diskon 10%.",
+    badge: "Diskon 20%",
+    warna: "from-orange-400 to-orange-600",
+    icon: "🎁",
+    berlakuHingga: "2026-07-31",
+    status: "Aktif",
+    targetMembership: ["Gold", "Platinum"],
+    syarat: ["Member Gold atau Platinum", "Teman harus mendaftar dengan kode referral", "Diskon berlaku setelah teman menyelesaikan perawatan pertama"],
+  },
+  {
+    id: "CP-003",
+    judul: "Cicilan 0% Behel",
+    deskripsi: "Pasang behel sekarang bayar nanti! Cicilan 0% hingga 12 bulan untuk pemasangan behel metal dan ceramic.",
+    badge: "Cicilan 0%",
+    warna: "from-blue-500 to-blue-700",
+    icon: "💳",
+    berlakuHingga: "2026-08-31",
+    status: "Aktif",
+    targetMembership: ["Semua"],
+    syarat: ["Minimal DP 30%", "Berlaku untuk behel metal & ceramic", "Pembayaran via kartu kredit partner"],
+  },
+  {
+    id: "CP-004",
+    judul: "Diskon Whitening 30%",
+    deskripsi: "Senyum lebih cerah dengan harga lebih hemat! Diskon 30% untuk whitening laser dan bleaching.",
+    badge: "Diskon 30%",
+    warna: "from-yellow-400 to-yellow-600",
+    icon: "✨",
+    berlakuHingga: "2026-06-15",
+    status: "Aktif",
+    targetMembership: ["Silver", "Gold", "Platinum"],
+    syarat: ["Member Silver ke atas", "Tidak bisa digabung dengan promo lain", "Berlaku Senin–Jumat saja"],
+  },
+  {
+    id: "CP-005",
+    judul: "Konsultasi Gratis Pasien Baru",
+    deskripsi: "Kunjungan pertama? Konsultasi dengan dokter spesialis kami sepenuhnya GRATIS tanpa syarat apapun.",
+    badge: "100% Gratis",
+    warna: "from-green-500 to-green-700",
+    icon: "👨‍⚕️",
+    berlakuHingga: "2026-12-31",
+    status: "Aktif",
+    targetMembership: ["Semua"],
+    syarat: ["Berlaku untuk kunjungan pertama saja", "Tidak termasuk tindakan medis", "Wajib booking terlebih dahulu"],
+  },
+];
+
 const INITIAL_DOCTORS = [
   {
     id: "DR-001",
@@ -67,8 +130,17 @@ const INITIAL_PATIENTS = [
     statusAktif: true,
     // ── 4. Riwayat Interaksi ─────────────────────────
     riwayatKomplain: [
-      { tanggal: "2026-03-05", isi: "Antrian terlalu lama", status: "Resolved" },
+      { id: "C-001", tanggal: "2026-05-28", isi: "Antrian terlalu lama, sudah menunggu lebih dari 1 jam", status: "Pending", prioritas: "High" },
+      { id: "C-002", tanggal: "2026-03-05", isi: "Antrian terlalu lama", status: "Resolved", prioritas: "Medium" },
     ],
+    chatHistory: [
+      { id: 1, text: "Halo dok, saya mau tanya jadwal kontrol saya", sender: "patient", time: "10:25", tanggal: "2026-05-29" },
+      { id: 2, text: "Halo Andi, jadwal kontrol Anda adalah Jumat besok jam 14:00", sender: "admin", time: "10:28", tanggal: "2026-05-29" },
+      { id: 3, text: "Terima kasih dokter!", sender: "patient", time: "10:30", tanggal: "2026-05-29" }
+    ],
+    lastChatMessage: "Terima kasih dokter!",
+    lastChatTime: "10:30",
+    unreadCount: 0,
     feedbackReview: { rating: 5, komentar: "Pelayanan sangat baik dan ramah!", tanggal: "2026-05-20" },
     catatanAdmin: "Pasien VIP, prioritaskan jadwal.",
     // ── 5. Data Transaksi ─────────────────────────────
@@ -111,7 +183,17 @@ const INITIAL_PATIENTS = [
     statusMember: "Regular",
     levelMembership: "Silver",
     statusAktif: true,
-    riwayatKomplain: [],
+    riwayatKomplain: [
+      { id: "C-003", tanggal: "2026-05-27", isi: "Dokter terlambat datang, tidak ada pemberitahuan sebelumnya", status: "In Progress", prioritas: "Medium" }
+    ],
+    chatHistory: [
+      { id: 1, text: "Dok, untuk scaling gigi berapa lama prosesnya?", sender: "patient", time: "15:20", tanggal: "2026-05-27" },
+      { id: 2, text: "Proses scaling sekitar 30-45 menit Siti", sender: "admin", time: "15:25", tanggal: "2026-05-27" },
+      { id: 3, text: "Baik, saya akan datang tepat waktu", sender: "patient", time: "15:30", tanggal: "2026-05-27" }
+    ],
+    lastChatMessage: "Baik, saya akan datang tepat waktu",
+    lastChatTime: "15:30",
+    unreadCount: 0,
     feedbackReview: { rating: 4, komentar: "Dokternya sabar dan teliti.", tanggal: "2026-05-01" },
     catatanAdmin: "Alergi obat bius merk X, gunakan alternatif.",
     riwayatPerawatan: [
@@ -150,9 +232,16 @@ const INITIAL_PATIENTS = [
     levelMembership: "Platinum",
     statusAktif: true,
     riwayatKomplain: [
-      { tanggal: "2025-11-10", isi: "Hasil whitening kurang merata", status: "Resolved" },
-      { tanggal: "2026-01-05", isi: "Jadwal dokter tidak sesuai", status: "Resolved" },
+      { id: "C-004", tanggal: "2025-11-10", isi: "Hasil whitening kurang merata", status: "Resolved", prioritas: "Medium" },
+      { id: "C-005", tanggal: "2026-01-05", isi: "Jadwal dokter tidak sesuai", status: "Resolved", prioritas: "Low" },
     ],
+    chatHistory: [
+      { id: 1, text: "Pak, hasil whitening sudah sempurna, terima kasih!", sender: "patient", time: "16:10", tanggal: "2026-04-20" },
+      { id: 2, text: "Sama-sama Pak Budi. Jangan lupa kontrol 6 bulan lagi ya", sender: "admin", time: "16:15", tanggal: "2026-04-20" }
+    ],
+    lastChatMessage: "Sama-sama Pak Budi. Jangan lupa kontrol 6 bulan lagi ya",
+    lastChatTime: "16:15",
+    unreadCount: 0,
     feedbackReview: { rating: 5, komentar: "Hasilnya luar biasa, gigi jadi putih bersih!", tanggal: "2026-04-15" },
     catatanAdmin: "Pasien loyal sejak 2023, berikan layanan prioritas.",
     riwayatPerawatan: [
@@ -192,8 +281,17 @@ const INITIAL_PATIENTS = [
     levelMembership: "Bronze",
     statusAktif: false,
     riwayatKomplain: [
-      { tanggal: "2026-05-23", isi: "Pasien membatalkan janji tiba-tiba", status: "Pending" },
+      { id: "C-006", tanggal: "2026-05-26", isi: "Biaya perawatan tidak sesuai dengan estimasi awal", status: "Pending", prioritas: "High" },
+      { id: "C-007", tanggal: "2026-05-23", isi: "Pasien membatalkan janji tiba-tiba", status: "Pending", prioritas: "Low" },
     ],
+    chatHistory: [
+      { id: 1, text: "Dok, saya mau reschedule appointment besok", sender: "patient", time: "09:30", tanggal: "2026-05-26" },
+      { id: 2, text: "Baik Bu Dewi, kapan Anda available?", sender: "admin", time: "09:35", tanggal: "2026-05-26" },
+      { id: 3, text: "Minggu depan kalau bisa", sender: "patient", time: "09:40", tanggal: "2026-05-26" }
+    ],
+    lastChatMessage: "Minggu depan kalau bisa",
+    lastChatTime: "09:40",
+    unreadCount: 2,
     feedbackReview: null,
     catatanAdmin: "Pasien sering reschedule, konfirmasi ulang H-1.",
     riwayatPerawatan: [
@@ -230,7 +328,17 @@ const INITIAL_PATIENTS = [
     statusMember: "Regular",
     levelMembership: "Silver",
     statusAktif: true,
-    riwayatKomplain: [],
+    riwayatKomplain: [
+      { id: "C-008", tanggal: "2026-05-25", isi: "Ruang tunggu tidak nyaman dan kurang bersih", status: "In Progress", prioritas: "Low" }
+    ],
+    chatHistory: [
+      { id: 1, text: "Halo dok, jadwal kontrol behel saya kapan?", sender: "patient", time: "07:15", tanggal: "2026-05-29" },
+      { id: 2, text: "Halo Rizky, kontrol behel Anda Jumat besok jam 10:00", sender: "admin", time: "07:20", tanggal: "2026-05-29" },
+      { id: 3, text: "Siap dok, terima kasih!", sender: "patient", time: "07:25", tanggal: "2026-05-29" }
+    ],
+    lastChatMessage: "Siap dok, terima kasih!",
+    lastChatTime: "07:25",
+    unreadCount: 0,
     feedbackReview: { rating: 5, komentar: "Behel terpasang rapi, dokternya berpengalaman!", tanggal: "2026-05-10" },
     catatanAdmin: "Sedang masa aktif behel, kontrol setiap 4 minggu.",
     riwayatPerawatan: [
@@ -378,9 +486,10 @@ const ClinicContext = createContext();
 export function ClinicProvider({ children }) {
   const [doctors, setDoctors] = useState(INITIAL_DOCTORS);
   const [patients, setPatients] = useState(INITIAL_PATIENTS);
+  const [campaigns, setCampaigns] = useState(INITIAL_CAMPAIGNS);
 
   return (
-    <ClinicContext.Provider value={{ doctors, setDoctors, patients, setPatients }}>
+    <ClinicContext.Provider value={{ doctors, setDoctors, patients, setPatients, campaigns, setCampaigns }}>
       {children}
     </ClinicContext.Provider>
   );

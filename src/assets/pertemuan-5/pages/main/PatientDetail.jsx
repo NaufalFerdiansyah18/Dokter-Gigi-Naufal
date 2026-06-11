@@ -1,19 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useClinic } from "../../context/ClinicContext";
-import { LOYALTY_CONFIG } from "../../data/ordersData";
 import {
   FaArrowLeft, FaPhone, FaUserMd,
   FaCalendarCheck, FaMapMarkerAlt, FaVenusMars, FaBirthdayCake,
-  FaEnvelope, FaStar, FaRegStar, FaMobile, FaClock, FaBullhorn,
-  FaShieldAlt, FaCommentAlt, FaStickyNote, FaExclamationCircle,
-  FaMoneyBillWave, FaCreditCard, FaCity, FaUser, FaHistory,
+  FaEnvelope, FaMobile, FaShieldAlt, FaCity, FaUser,
 } from "react-icons/fa";
 
 import Badge       from "../../components/Badge";
 import Avatar      from "../../components/Avatar";
 import Card        from "../../components/Card";
-import Table       from "../../components/Table";
 import Alert       from "../../components/Alert";
 import ProgressBar from "../../components/ProgressBar";
 import Tabs        from "../../components/Tabs";
@@ -21,9 +17,13 @@ import Tabs        from "../../components/Tabs";
 import { Button }   from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const STATUS_BADGE  = { Active: "success", Waiting: "warning", Completed: "teal", Cancel: "danger" };
-const LEVEL_COLOR   = { Platinum: "bg-purple-100 text-purple-700", Gold: "bg-yellow-100 text-yellow-700", Silver: "bg-gray-100 text-gray-600", Bronze: "bg-orange-100 text-orange-600" };
-const KOMPLAIN_BADGE = { Resolved: "success", Pending: "warning", "In Progress": "teal" };
+const STATUS_BADGE = { Active: "success", Waiting: "warning", Completed: "teal", Cancel: "danger" };
+const LEVEL_COLOR  = {
+  Platinum: "bg-purple-100 text-purple-700",
+  Gold:     "bg-yellow-100 text-yellow-700",
+  Silver:   "bg-gray-100 text-gray-600",
+  Bronze:   "bg-orange-100 text-orange-600",
+};
 
 function DetailSkeleton() {
   return (
@@ -71,18 +71,6 @@ function SectionHeader({ icon, title, color = "bg-[#E8F8F6] text-[#1A7C6E]" }) {
   );
 }
 
-function StarRating({ value }) {
-  return (
-    <div className="flex gap-0.5">
-      {[1,2,3,4,5].map(i => (
-        i <= value
-          ? <FaStar key={i} className="text-yellow-400 text-sm" />
-          : <FaRegStar key={i} className="text-gray-300 text-sm" />
-      ))}
-    </div>
-  );
-}
-
 export default function PatientDetail() {
   const { id }       = useParams();
   const { patients } = useClinic();
@@ -112,50 +100,9 @@ export default function PatientDetail() {
     );
   }
 
-  const riwayatPerawatan = patient?.riwayatPerawatan || [
-    { tanggal: patient?.terakhirKunjungan || "-", tindakan: patient?.treatment || "-", dokter: patient?.dokter || "-", biaya: 0, metode: "-" },
-  ];
-
-  const riwayatColumns = [
-    { key: "tanggal",  label: "Tanggal",  render: (v) => <span className="font-mono text-xs text-gray-500">{v}</span> },
-    { key: "tindakan", label: "Tindakan", render: (v) => <span className="font-medium text-gray-800">{v}</span> },
-    { key: "dokter",   label: "Dokter" },
-    {
-      key: "biaya",
-      label: "Biaya",
-      render: (v) => {
-        const discountRate = LOYALTY_CONFIG[patient?.levelMembership] || 0;
-        if (discountRate > 0 && v > 0) {
-          const discounted = v * (1 - discountRate);
-          return (
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1">
-                <span className="line-through text-gray-400 text-xs">Rp {v?.toLocaleString("id-ID")}</span>
-                <span className="text-[10px] font-bold text-orange-500 bg-orange-50 px-1 py-0.5 rounded leading-none">
-                  -{discountRate * 100}%
-                </span>
-              </div>
-              <span className="font-semibold text-[#1A7C6E]">Rp {discounted.toLocaleString("id-ID")}</span>
-            </div>
-          );
-        }
-        return <span className="font-semibold text-gray-700">Rp {v?.toLocaleString("id-ID") ?? "-"}</span>;
-      }
-    },
-    { key: "metode",   label: "Metode",   render: (v) => <span className="text-xs text-gray-500">{v || "-"}</span> },
-  ];
-
-  const komplainColumns = [
-    { key: "tanggal", label: "Tanggal",  render: (v) => <span className="font-mono text-xs text-gray-500">{v}</span> },
-    { key: "isi",     label: "Komplain", render: (v) => <span className="text-sm text-gray-700">{v}</span> },
-    { key: "status",  label: "Status",   render: (v) => <Badge variant={KOMPLAIN_BADGE[v] || "default"} dot>{v}</Badge> },
-  ];
-
   const detailTabs = [
-    { key: "overview", label: "Overview & Profil", icon: <FaUser /> },
-    { key: "transaksi", label: "Transaksi & Riwayat", icon: <FaHistory />, badge: riwayatPerawatan.length },
-    { key: "akun", label: "Akun & Aktivitas", icon: <FaShieldAlt /> },
-    { key: "engagement", label: "Engagement & Feedback", icon: <FaCommentAlt /> },
+    { key: "overview", label: "Overview & Profil",  icon: <FaUser /> },
+    { key: "akun",     label: "Akun & Aktivitas",   icon: <FaShieldAlt /> },
   ];
 
   return (
@@ -177,7 +124,7 @@ export default function PatientDetail() {
       {isLoading ? <DetailSkeleton /> : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          {/* ── Kolom Kiri: Profil Utama & Kontak ── */}
+          {/* ── Kolom Kiri: Profil ── */}
           <div className="lg:col-span-1 flex flex-col gap-6">
             <Card padding="none">
               <div className="h-28 w-full rounded-t-2xl"
@@ -194,8 +141,6 @@ export default function PatientDetail() {
                     </span>
                   )}
                 </div>
-
-                {/* Info Kontak Ringkas */}
                 <div className="mt-6 w-full space-y-1 text-left">
                   <InfoRow icon={<FaBirthdayCake />} label="Tanggal Lahir" value={patient.tanggalLahir ? new Date(patient.tanggalLahir).toLocaleDateString("id-ID", { day:"numeric", month:"long", year:"numeric" }) : `${patient.umur} Tahun`} />
                   <InfoRow icon={<FaVenusMars />}    label="Jenis Kelamin" value={patient.jenisKelamin === "L" ? "Laki-laki ♂" : "Perempuan ♀"} />
@@ -209,10 +154,9 @@ export default function PatientDetail() {
             </Card>
           </div>
 
-          {/* ── Kolom Kanan: Detail Berdasarkan Tab ── */}
+          {/* ── Kolom Kanan: Tab ── */}
           <div className="lg:col-span-2 flex flex-col gap-6">
-            
-            {/* Tabs Control */}
+
             <Card padding="none" className="overflow-hidden">
               <Tabs tabs={detailTabs} activeKey={activeTab} onChange={setActiveTab} variant="underline" className="px-2" />
             </Card>
@@ -274,47 +218,15 @@ export default function PatientDetail() {
               </div>
             )}
 
-            {/* TAB 2: TRANSAKSI & RIWAYAT PERAWATAN */}
-            {activeTab === "transaksi" && (
-              <div className="flex flex-col gap-6">
-                <Card padding="md">
-                  <SectionHeader icon={<FaMoneyBillWave />} title="Ringkasan Keuangan Pasien" color="bg-green-50 text-green-600" />
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="p-4 rounded-xl bg-green-50 border border-green-100 text-center">
-                      <p className="text-xs text-green-500 mb-1">Total Akumulasi Transaksi</p>
-                      <p className="font-bold text-green-700 text-lg">
-                        Rp {patient.totalTransaksi?.toLocaleString("id-ID") ?? "0"}
-                      </p>
-                    </div>
-                    <div className="p-4 rounded-xl bg-blue-50 border border-blue-100 text-center">
-                      <p className="text-xs text-blue-500 mb-1 flex items-center justify-center gap-1"><FaCreditCard /> Metode Pembayaran Terakhir</p>
-                      <p className="font-bold text-blue-700 text-sm">{patient.metodePembayaran || "-"}</p>
-                    </div>
-                    <div className="p-4 rounded-xl bg-gray-50 border border-gray-100 text-center">
-                      <p className="text-xs text-gray-400 mb-1 flex items-center justify-center gap-1"><FaClock /> Kunjungan Terakhir</p>
-                      <p className="font-bold text-gray-700 text-sm">{patient.terakhirKunjungan || "-"}</p>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card title="Detail Sesi & Riwayat Tindakan" padding="none">
-                  <Table columns={riwayatColumns} data={riwayatPerawatan}
-                    emptyText="Belum ada riwayat perawatan."
-                    className="border-0 rounded-none shadow-none" />
-                </Card>
-              </div>
-            )}
-
-            {/* TAB 3: AKUN & AKTIVITAS */}
+            {/* TAB 2: AKUN & AKTIVITAS */}
             {activeTab === "akun" && (
               <div className="flex flex-col gap-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {/* Membership Details */}
                   <Card padding="md">
                     <SectionHeader icon={<FaShieldAlt />} title="Membership & Akun" color="bg-blue-50 text-blue-600" />
                     <div className="space-y-3">
                       <InfoRowInline label="Tanggal Terdaftar" value={patient.tanggalDaftar ? new Date(patient.tanggalDaftar).toLocaleDateString("id-ID", { day:"numeric", month:"long", year:"numeric" }) : "-"} />
-                      <InfoRowInline label="Tipe Membership"    value={patient.statusMember || "-"} />
+                      <InfoRowInline label="Tipe Membership"   value={patient.statusMember || "-"} />
                       <InfoRowInline label="Tingkatan (Level)" value={
                         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${LEVEL_COLOR[patient.levelMembership] || "bg-gray-100 text-gray-500"}`}>
                           {patient.levelMembership || "-"}
@@ -328,97 +240,15 @@ export default function PatientDetail() {
                     </div>
                   </Card>
 
-                  {/* Device & Activity */}
                   <Card padding="md">
                     <SectionHeader icon={<FaMobile />} title="Aktivitas Login & System" color="bg-purple-50 text-purple-600" />
                     <div className="space-y-3">
-                      <InfoRowInline label="Koneksi Terakhir"    value={patient.loginTerakhir ? new Date(patient.loginTerakhir).toLocaleString("id-ID") : "-"} />
+                      <InfoRowInline label="Koneksi Terakhir"  value={patient.loginTerakhir ? new Date(patient.loginTerakhir).toLocaleString("id-ID") : "-"} />
                       <InfoRowInline label="Model Perangkat"   value={patient.deviceDigunakan || "-"} />
                       <InfoRowInline label="Durasi Sesi Aktif" value={patient.durasiPenggunaan || "-"} />
                     </div>
                   </Card>
                 </div>
-              </div>
-            )}
-
-            {/* TAB 4: ENGAGEMENT & FEEDBACK */}
-            {activeTab === "engagement" && (
-              <div className="flex flex-col gap-6">
-                
-                {/* Marketing & Sumber User */}
-                <Card padding="md">
-                  <SectionHeader icon={<FaBullhorn />} title="Sumber & Program Marketing" color="bg-orange-50 text-orange-600" />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <InfoRowInline label="Sumber Akuisisi" value={patient.sumberUser || "-"} />
-                      <InfoRowInline label="Status Promo" value={
-                        <Badge variant={patient.statusPromo === "Aktif" ? "success" : "default"} dot>
-                          {patient.statusPromo || "-"}
-                        </Badge>
-                      } />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-400 mb-1">Campaign yang Diikuti</p>
-                      {patient.campaignDiikuti?.length ? (
-                        <div className="flex flex-wrap gap-1.5 mt-1">
-                          {patient.campaignDiikuti.map((c, i) => (
-                            <span key={i} className="text-xs bg-orange-50 text-orange-600 border border-orange-200 px-2.5 py-0.5 rounded-full font-medium">{c}</span>
-                          ))}
-                        </div>
-                      ) : <p className="text-sm text-gray-400 italic">Tidak ada campaign yang diikuti.</p>}
-                    </div>
-                  </div>
-
-                  {/* Referral Section (Strategic CRM) */}
-                  <div className="mt-4 pt-4 border-t border-gray-100">
-                    <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Program Referral Pasien</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <InfoRowInline label="Kode Referral Unik" value={<span className="font-mono bg-teal-50 text-[#1A7C6E] font-bold px-2 py-0.5 rounded border border-teal-200">REF-{patient.id}</span>} />
-                      </div>
-                      <div>
-                        <InfoRowInline label="Jumlah Referral Sukses" value={<span className="font-bold text-gray-700">2 Pasien</span>} />
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-
-                {/* Review / Feedback */}
-                <Card padding="md">
-                  <SectionHeader icon={<FaCommentAlt />} title="Feedback & Ulasan Pasien" color="bg-yellow-50 text-yellow-600" />
-                  {patient.feedbackReview ? (
-                    <div className="p-4 rounded-xl bg-yellow-50 border border-yellow-200/50">
-                      <div className="flex items-center gap-2 mb-2">
-                        <StarRating value={patient.feedbackReview.rating} />
-                        <span className="text-sm font-bold text-yellow-700">{patient.feedbackReview.rating}/5</span>
-                        <span className="text-xs text-gray-400 ml-auto">{patient.feedbackReview.tanggal}</span>
-                      </div>
-                      <p className="text-sm text-gray-700 italic">"{patient.feedbackReview.komentar}"</p>
-                    </div>
-                  ) : (
-                    <p className="text-sm text-gray-400 italic">Belum ada feedback / review dari pasien ini.</p>
-                  )}
-                </Card>
-
-                {/* Komplain */}
-                <Card padding="md">
-                  <SectionHeader icon={<FaExclamationCircle />} title="Riwayat Keluhan & Komplain Layanan" color="bg-red-50 text-red-500" />
-                  {patient.riwayatKomplain?.length ? (
-                    <Table columns={komplainColumns} data={patient.riwayatKomplain}
-                      emptyText="Tidak ada komplain."
-                      className="border-0 rounded-none shadow-none -mx-4" />
-                  ) : (
-                    <p className="text-sm text-gray-400 italic">Tidak ada riwayat komplain.</p>
-                  )}
-                </Card>
-
-                {/* Catatan Admin */}
-                <Card padding="md">
-                  <SectionHeader icon={<FaStickyNote />} title="Catatan Internal Staf / Admin" color="bg-indigo-50 text-indigo-600" />
-                  <div className="p-4 rounded-xl bg-indigo-50 border border-indigo-100">
-                    <p className="text-sm text-indigo-800 font-medium">{patient.catatanAdmin || "Tidak ada catatan internal."}</p>
-                  </div>
-                </Card>
               </div>
             )}
 

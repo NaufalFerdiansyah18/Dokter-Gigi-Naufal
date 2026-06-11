@@ -1,4 +1,3 @@
-import axios from "axios"
 import React, { useState } from "react"
 import { BsFillExclamationDiamondFill } from "react-icons/bs"
 import { ImSpinner2 } from "react-icons/im"
@@ -22,34 +21,26 @@ export default function Login() {
     })
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
 
-    setLoading(true)
-    setError(false)
+    if (!dataForm.username.trim()) {
+      setError("Username tidak boleh kosong.")
+      return
+    }
 
-    axios
-      .post("https://dummyjson.com/user/login", {
-        username: dataForm.username,
-        password: dataForm.password,
-      })
-      .then((response) => {
-        if (response.status !== 200) {
-          setError(response.data.message)
-          return
-        }
-        navigate("/")
-      })
-      .catch((err) => {
-        if (err.response) {
-          setError(err.response.data.message || "An error occurred")
-        } else {
-          setError(err.message || "An unknown error occurred")
-        }
-      })
-      .finally(() => {
-        setLoading(false)
-      })
+    if (dataForm.password !== "naufal123") {
+      setError("Password salah. Gunakan password yang benar.")
+      return
+    }
+
+    setLoading(true)
+    setError("")
+    setTimeout(() => {
+      setLoading(false)
+      localStorage.setItem("isLoggedIn", "true")
+      navigate("/dashboard")
+    }, 600)
   }
 
   const errorInfo = error ? (
