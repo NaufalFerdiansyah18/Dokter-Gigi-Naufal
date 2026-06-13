@@ -3,6 +3,7 @@ import { FaBell, FaSearch, FaTimes } from "react-icons/fa";
 import { FcAreaChart } from "react-icons/fc";
 import { SlSettings } from "react-icons/sl";
 import { orders, STATUS_CONFIG } from "../data/ordersData.jsx";
+import { supabase } from "../../../services/supabaseClient";
 
 // Improvisasi 3: Live Clock
 function LiveClock() {
@@ -26,7 +27,30 @@ function LiveClock() {
 export default function Header() {
     const [query, setQuery] = useState("");
     const [showDropdown, setShowDropdown] = useState(false);
+    const [userData, setUserData] = useState(null);
     const wrapperRef = useRef(null);
+
+    // Ambil data user yang login
+    useEffect(() => {
+        async function fetchUserData() {
+            const userEmail = localStorage.getItem("user_email");
+            if (!userEmail) return;
+
+            const { data: publicUserData } = await supabase
+                .from("users")
+                .select("*")
+                .eq("email", userEmail)
+                .single();
+
+            if (publicUserData) {
+                setUserData(publicUserData);
+            } else {
+                // Fallback ke email saja jika data tidak ada di public.users
+                setUserData({ email: userEmail, username: userEmail.split("@")[0] });
+            }
+        }
+        fetchUserData();
+    }, []);
 
     // Tutup dropdown saat klik di luar
     useEffect(() => {
@@ -135,10 +159,12 @@ export default function Header() {
                 <div className="flex items-center gap-3 cursor-pointer">
                     <div className="text-right">
                         <p className="text-[10px] text-gray-400 font-medium leading-none mb-0.5">Hello,</p>
-                        <p className="text-sm font-bold text-gray-800 leading-tight"> Naufal Ferdiansyah Putra</p>
+                        <p className="text-sm font-bold text-gray-800 leading-tight">
+                            {userData?.full_name || userData?.username || userData?.email?.split("@")[0] || "Admin"}
+                        </p>
                     </div>
                     <img
-                        src="https://avatar.iran.liara.run/public/boy?username=Fikri"
+                        src={`https://avatar.iran.liara.run/public/${userData?.username?.[0]?.toLowerCase() === 'a' ? 'boy' : 'girl'}?username=${userData?.username || 'Admin'}`}
                         className="w-10 h-10 rounded-full border-2 border-gray-100 object-cover"
                         alt="Profile"
                     />

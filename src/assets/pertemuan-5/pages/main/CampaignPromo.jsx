@@ -114,21 +114,29 @@ export default function CampaignPromo() {
   };
 
   return (
-    <div className="flex flex-col gap-6 pb-10">
+    <div className="flex flex-col w-full pb-10 min-h-screen bg-gray-50/30">
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-extrabold text-gray-800">Campaign & Promo</h1>
-          <p className="text-sm text-gray-400 mt-1">Kelola dan pantau campaign yang aktif di halaman guest.</p>
+      {/* Banner */}
+      <div className="relative bg-gradient-to-r from-[#1A7C6E] to-[#2BB5A0] rounded-3xl px-8 pt-10 pb-24 text-white overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+        <div className="absolute bottom-0 left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl translate-y-1/2" />
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Campaign & Promo</h1>
+            <p className="text-white/80 text-sm max-w-lg">
+              Kelola dan pantau campaign yang aktif di halaman guest.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors flex items-center gap-2 w-fit"
+          >
+            <FaPlus /> Tambah Campaign
+          </button>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-[#0F766E] hover:bg-[#0A5E58] text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-colors"
-        >
-          <FaPlus /> Tambah Campaign
-        </button>
       </div>
+
+      <div className="relative -mt-14 z-20 flex flex-col gap-6">
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -242,6 +250,7 @@ export default function CampaignPromo() {
           </div>
         </div>
       </div>
+      </div>
 
       {/* Modal tambah campaign */}
       {showModal && (
@@ -335,169 +344,4 @@ export default function CampaignPromo() {
   );
 }
 
-const LEVEL_COLOR = {
-  Platinum: "bg-purple-100 text-purple-700",
-  Gold:     "bg-yellow-100 text-yellow-700",
-  Silver:   "bg-gray-100 text-gray-600",
-  Bronze:   "bg-orange-100 text-orange-600",
-};
-const PROMO_BADGE = { Aktif: "success", "Tidak Aktif": "default" };
 
-function StatCard({ icon, label, value, color = "teal" }) {
-  const colors = {
-    teal:   "bg-[#E8F8F6] text-[#0F766E]",
-    orange: "bg-orange-50 text-orange-600",
-    blue:   "bg-blue-50 text-blue-600",
-    purple: "bg-purple-50 text-purple-600",
-  };
-  return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
-      <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0 ${colors[color]}`}>
-        {icon}
-      </div>
-      <div>
-        <p className="text-xs text-gray-400 font-medium">{label}</p>
-        <p className="text-2xl font-extrabold text-gray-800">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-export default function CampaignPromo() {
-  const { patients } = useClinic();
-  const navigate = useNavigate();
-
-  const [search, setSearch] = useState("");
-  const [filterLevel, setFilterLevel] = useState("Semua");
-  const [filterPromo, setFilterPromo] = useState("Semua");
-
-  // ── Stats
-  const stats = useMemo(() => {
-    const promoAktif = patients.filter((p) => p.statusPromo === "Aktif").length;
-    const allCampaigns = patients.flatMap((p) => p.campaignDiikuti || []);
-    const uniqueCampaigns = [...new Set(allCampaigns)];
-    const ikutCampaign = patients.filter((p) => p.campaignDiikuti?.length > 0).length;
-    return { promoAktif, totalCampaign: uniqueCampaigns.length, ikutCampaign };
-  }, [patients]);
-
-  // ── Filter
-  const filtered = useMemo(() => {
-    return patients.filter((p) => {
-      const matchSearch = p.nama.toLowerCase().includes(search.toLowerCase()) ||
-        p.id.toLowerCase().includes(search.toLowerCase());
-      const matchLevel = filterLevel === "Semua" || p.levelMembership === filterLevel;
-      const matchPromo = filterPromo === "Semua" || p.statusPromo === filterPromo;
-      return matchSearch && matchLevel && matchPromo;
-    });
-  }, [patients, search, filterLevel, filterPromo]);
-
-  return (
-    <div className="flex flex-col gap-6 pb-10">
-
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-extrabold text-gray-800">Campaign & Promo</h1>
-        <p className="text-sm text-gray-400 mt-1">
-          Pantau status promo dan campaign yang diikuti setiap pasien.
-        </p>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatCard icon={<MdOutlineLoyalty />} label="Pasien Promo Aktif"   value={stats.promoAktif}    color="teal"   />
-        <StatCard icon={<FaBullhorn />}       label="Jumlah Campaign"      value={stats.totalCampaign} color="orange" />
-        <StatCard icon={<FaUsers />}          label="Pasien Ikut Campaign" value={stats.ikutCampaign}  color="blue"   />
-      </div>
-
-      {/* Filter Bar */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-wrap gap-3 items-center">
-        <div className="relative flex-1 min-w-48">
-          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
-          <input
-            type="text"
-            placeholder="Cari nama / ID pasien..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0F766E]/30 focus:border-[#0F766E]"
-          />
-        </div>
-        <div className="flex items-center gap-2">
-          <FaFilter className="text-gray-400 text-xs" />
-          <select
-            value={filterLevel}
-            onChange={(e) => setFilterLevel(e.target.value)}
-            className="border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 focus:outline-none"
-          >
-            {["Semua", "Platinum", "Gold", "Silver", "Bronze"].map((l) => (
-              <option key={l}>{l}</option>
-            ))}
-          </select>
-          <select
-            value={filterPromo}
-            onChange={(e) => setFilterPromo(e.target.value)}
-            className="border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-600 focus:outline-none"
-          >
-            {["Semua", "Aktif", "Tidak Aktif"].map((l) => (
-              <option key={l}>{l}</option>
-            ))}
-          </select>
-        </div>
-        <span className="text-xs text-gray-400 ml-auto">{filtered.length} pasien</span>
-      </div>
-
-      {/* List */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="divide-y divide-gray-50">
-          {filtered.map((p) => (
-            <div key={p.id} className="flex items-start gap-4 p-4 hover:bg-gray-50/60 transition-colors">
-              <Avatar name={p.nama} size="sm" color="bg-[#E8F8F6] text-[#0F766E]" />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <p className="font-semibold text-gray-800 text-sm">{p.nama}</p>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${LEVEL_COLOR[p.levelMembership] || "bg-gray-100 text-gray-500"}`}>
-                    {p.levelMembership}
-                  </span>
-                  <Badge variant={PROMO_BADGE[p.statusPromo] || "default"} size="sm" dot>
-                    {p.statusPromo}
-                  </Badge>
-                </div>
-
-                {/* Sumber akuisisi */}
-                <p className="text-xs text-gray-400 mb-2">
-                  Sumber: <span className="font-medium text-gray-500">{p.sumberUser || "-"}</span>
-                </p>
-
-                {/* Campaign tags */}
-                {p.campaignDiikuti?.length ? (
-                  <div className="flex flex-wrap gap-1.5">
-                    {p.campaignDiikuti.map((c, i) => (
-                      <span key={i} className="text-[11px] bg-orange-50 text-orange-600 border border-orange-200 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-                        <FaBullhorn className="text-[9px]" />{c}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs text-gray-300 italic">Tidak ikut campaign apapun</p>
-                )}
-              </div>
-
-              <button
-                onClick={() => navigate(`/pasien/${p.id}`, { state: { tab: "engagement" } })}
-                className="flex items-center gap-1 text-xs font-semibold text-[#0F766E] hover:underline shrink-0 mt-1"
-              >
-                Detail <FaExternalLinkAlt className="text-[10px]" />
-              </button>
-            </div>
-          ))}
-
-          {filtered.length === 0 && (
-            <div className="py-16 text-center">
-              <FaBullhorn className="mx-auto text-4xl text-gray-200 mb-3" />
-              <p className="text-sm text-gray-400">Tidak ada pasien ditemukan.</p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}

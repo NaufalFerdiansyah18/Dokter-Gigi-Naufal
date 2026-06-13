@@ -80,15 +80,21 @@ export default function FeedbackRating() {
   const maxDist = Math.max(...dist.map((d) => d.count), 1);
 
   return (
-    <div className="flex flex-col gap-6 pb-10">
+    <div className="flex flex-col w-full pb-10 min-h-screen bg-gray-50/30">
 
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-extrabold text-gray-800">Feedback & Rating</h1>
-        <p className="text-sm text-gray-400 mt-1">
-          Ulasan dan penilaian pasien terhadap layanan klinik.
-        </p>
+      {/* Banner */}
+      <div className="relative bg-gradient-to-r from-[#1A7C6E] to-[#2BB5A0] rounded-3xl px-8 pt-10 pb-24 text-white overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+        <div className="absolute bottom-0 left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl translate-y-1/2" />
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold mb-2">Feedback & Rating</h1>
+          <p className="text-white/80 text-sm max-w-lg">
+            Ulasan dan penilaian pasien terhadap layanan klinik.
+          </p>
+        </div>
       </div>
+
+      <div className="relative -mt-14 z-20 flex flex-col gap-6">
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -192,6 +198,7 @@ export default function FeedbackRating() {
             )}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

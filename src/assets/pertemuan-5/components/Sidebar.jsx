@@ -3,7 +3,6 @@ import {
   FaUserFriends,
   FaTooth,
   FaComments,
-  FaMoneyBillWave,
   FaExclamationTriangle,
   FaSignOutAlt,
   FaBullhorn,
@@ -115,24 +114,26 @@ export default function Sidebar() {
           <MenuItem to="/chat-admin"     icon={<FaComments />}             label="Chat Admin"      />
         </nav>
 
-      </div>
+        <SectionLabel>Akun</SectionLabel>
+        <nav className="space-y-0.5">
+          <ActionItem
+            icon={<MdOutlineSettings />}
+            label="Pengaturan"
+            onClick={() => {}}
+          />
+          <ActionItem
+            icon={<FaSignOutAlt />}
+            label="Keluar"
+            onClick={() => {
+              localStorage.removeItem("isLoggedIn");
+              localStorage.removeItem("user_email");
+              localStorage.removeItem("user_role");
+              navigate("/login");
+            }}
+            danger
+          />
+        </nav>
 
-      {/* ── DIVIDER ── */}
-      <div className="mx-4 border-t border-white/10" />
-
-      {/* ── BOTTOM ACTIONS ── */}
-      <div className="px-3 py-3 space-y-0.5">
-        <ActionItem
-          icon={<MdOutlineSettings />}
-          label="Pengaturan"
-          onClick={() => {}}
-        />
-        <ActionItem
-          icon={<FaSignOutAlt />}
-          label="Keluar"
-          onClick={() => navigate("/login")}
-          danger
-        />
       </div>
 
     </aside>

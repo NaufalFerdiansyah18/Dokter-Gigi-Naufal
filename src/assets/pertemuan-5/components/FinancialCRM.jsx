@@ -199,39 +199,40 @@ const FinancialCRM = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                Modul Finansial CRM
-              </h1>
-              <p className="text-gray-600">
-                Kelola riwayat transaksi dan tindakan pasien
-              </p>
-            </div>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition-colors shadow-lg"
-            >
-              <FaPlus className="text-sm" />
-              Tambah Tindakan
-            </button>
+    <div className="flex flex-col w-full pb-10 min-h-screen bg-gray-50/30">
+
+      {/* Banner */}
+      <div className="relative bg-gradient-to-r from-[#1A7C6E] to-[#2BB5A0] rounded-3xl px-8 pt-10 pb-24 text-white overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+        <div className="absolute bottom-0 left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl translate-y-1/2" />
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Modul Finansial CRM</h1>
+            <p className="text-white/80 text-sm max-w-lg">
+              Kelola riwayat transaksi dan tindakan pasien.
+            </p>
           </div>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white px-6 py-2.5 rounded-xl font-semibold flex items-center gap-2 transition-colors w-fit"
+          >
+            <FaPlus className="text-sm" />
+            Tambah Tindakan
+          </button>
         </div>
+      </div>
+
+      <div className="relative -mt-14 z-20 flex flex-col gap-6">
 
         {/* Patient Selector */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Pilih Pasien:
           </label>
           <select
             value={selectedPatient?.id || ''}
             onChange={(e) => setSelectedPatient(patients.find(p => p.id === e.target.value))}
-            className="w-full md:w-96 px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            className="w-full md:w-96 px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#0F766E]/30 focus:border-[#0F766E]"
           >
             {patients.map(patient => (
               <option key={patient.id} value={patient.id}>
@@ -242,65 +243,57 @@ const FinancialCRM = () => {
         </div>
 
         {/* Financial Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           
           {/* Total Akumulasi */}
-          <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-lg p-6 text-white">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                <FaChartLine className="text-2xl" />
-              </div>
-              <span className="text-xs font-semibold bg-white/20 px-3 py-1 rounded-full">
-                {financialSummary.jumlahTransaksi} Transaksi
-              </span>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5">
+            <div className="w-14 h-14 bg-[#E8F8F6] rounded-full flex items-center justify-center shrink-0">
+              <FaChartLine className="text-2xl text-[#0F766E]" />
             </div>
-            <h3 className="text-sm font-medium text-emerald-100 mb-1">
-              Total Akumulasi Transaksi
-            </h3>
-            <p className="text-3xl font-bold">
-              {formatCurrency(financialSummary.totalAkumulasi)}
-            </p>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <p className="text-xs text-gray-400 font-medium">Total Akumulasi</p>
+                <span className="text-[10px] font-semibold bg-[#E8F8F6] text-[#0F766E] px-2 py-0.5 rounded-full">
+                  {financialSummary.jumlahTransaksi} Transaksi
+                </span>
+              </div>
+              <p className="text-xl font-extrabold text-gray-800">
+                {formatCurrency(financialSummary.totalAkumulasi)}
+              </p>
+            </div>
           </div>
 
-          {/* Metode Pembayaran Terakhir */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
-                <FaWallet className="text-2xl text-blue-600" />
-              </div>
+          {/* Metode Terakhir */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5">
+            <div className="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center shrink-0">
+              <FaWallet className="text-2xl text-blue-600" />
             </div>
-            <h3 className="text-sm font-semibold text-gray-600 mb-1">
-              Metode Pembayaran Terakhir
-            </h3>
-            <p className="text-2xl font-bold text-gray-900">
-              {financialSummary.metodeTerakhir}
-            </p>
+            <div>
+              <p className="text-xs text-gray-400 font-medium">Metode Pembayaran Terakhir</p>
+              <p className="text-2xl font-extrabold text-gray-800">{financialSummary.metodeTerakhir}</p>
+            </div>
           </div>
 
           {/* Kunjungan Terakhir */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center">
-                <FaHistory className="text-2xl text-purple-600" />
-              </div>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5">
+            <div className="w-14 h-14 bg-purple-50 rounded-full flex items-center justify-center shrink-0">
+              <FaHistory className="text-2xl text-purple-600" />
             </div>
-            <h3 className="text-sm font-semibold text-gray-600 mb-1">
-              Kunjungan Terakhir
-            </h3>
-            <p className="text-lg font-bold text-gray-900">
-              {formatDate(financialSummary.kunjunganTerakhir)}
-            </p>
+            <div>
+              <p className="text-xs text-gray-400 font-medium">Kunjungan Terakhir</p>
+              <p className="text-lg font-extrabold text-gray-800">{formatDate(financialSummary.kunjunganTerakhir)}</p>
+            </div>
           </div>
         </div>
 
         {/* Transaction History Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-            <h2 className="text-xl font-bold text-gray-900">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/60">
+            <h2 className="text-lg font-bold text-gray-800">
               Detail Sesi & Riwayat Tindakan
             </h2>
-            <p className="text-sm text-gray-600 mt-1">
-              Pasien: <span className="font-semibold text-gray-900">{selectedPatient?.nama}</span>
+            <p className="text-sm text-gray-400 mt-0.5">
+              Pasien: <span className="font-semibold text-gray-800">{selectedPatient?.nama}</span>
             </p>
           </div>
 
@@ -356,7 +349,7 @@ const FinancialCRM = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-orange-600 font-semibold">
                         {item.diskon ? `${item.diskon}%` : '0%'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-emerald-600">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-[#0F766E]">
                         {formatCurrency(item.biaya)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -376,12 +369,12 @@ const FinancialCRM = () => {
                 )}
               </tbody>
               {selectedPatient?.riwayatPerawatan.length > 0 && (
-                <tfoot className="bg-emerald-50 border-t-2 border-emerald-200">
+                <tfoot className="bg-[#E8F8F6] border-t-2 border-[#0F766E]/20">
                   <tr>
                     <td colSpan="6" className="px-6 py-4 text-right font-bold text-gray-900">
                       TOTAL KESELURUHAN:
                     </td>
-                    <td colSpan="2" className="px-6 py-4 font-bold text-2xl text-emerald-600">
+                    <td colSpan="2" className="px-6 py-4 font-bold text-2xl text-[#0F766E]">
                       {formatCurrency(financialSummary.totalAkumulasi)}
                     </td>
                   </tr>
@@ -399,7 +392,7 @@ const FinancialCRM = () => {
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             
             {/* Modal Header */}
-            <div className="sticky top-0 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-4 flex items-center justify-between rounded-t-2xl">
+            <div className="sticky top-0 bg-gradient-to-r from-[#1A7C6E] to-[#2BB5A0] text-white px-6 py-4 flex items-center justify-between rounded-t-2xl">
               <h2 className="text-xl font-bold">Tambah Tindakan Baru</h2>
               <button
                 onClick={() => {
@@ -416,7 +409,7 @@ const FinancialCRM = () => {
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
               
               {/* Patient Info */}
-              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+              <div className="bg-[#E8F8F6] border border-[#0F766E]/20 rounded-xl p-4">
                 <p className="text-sm text-gray-700">
                   <span className="font-semibold">Pasien:</span> {selectedPatient?.nama}
                 </p>
@@ -428,7 +421,7 @@ const FinancialCRM = () => {
               {/* Tanggal Tindakan */}
               <div>
                 <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                  <FaCalendarAlt className="text-emerald-600" />
+                  <FaCalendarAlt className="text-[#0F766E]" />
                   Tanggal Tindakan <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -436,7 +429,7 @@ const FinancialCRM = () => {
                   name="tanggalTindakan"
                   value={formData.tanggalTindakan}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-2.5 border ${errors.tanggalTindakan ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
+                  className={`w-full px-4 py-2.5 border ${errors.tanggalTindakan ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#0F766E]/30 focus:border-[#0F766E]`}
                 />
                 {errors.tanggalTindakan && (
                   <p className="text-red-500 text-xs mt-1">{errors.tanggalTindakan}</p>
@@ -446,14 +439,14 @@ const FinancialCRM = () => {
               {/* Jenis Tindakan */}
               <div>
                 <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                  <FaTooth className="text-emerald-600" />
+                  <FaTooth className="text-[#0F766E]" />
                   Jenis Tindakan <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="jenisTindakan"
                   value={formData.jenisTindakan}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-2.5 border ${errors.jenisTindakan ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
+                  className={`w-full px-4 py-2.5 border ${errors.jenisTindakan ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#0F766E]/30 focus:border-[#0F766E]`}
                 >
                   <option value="">-- Pilih Jenis Tindakan --</option>
                   {JENIS_TINDAKAN.map((jenis, index) => (
@@ -468,14 +461,14 @@ const FinancialCRM = () => {
               {/* Dokter Penanganan */}
               <div>
                 <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                  <FaUserMd className="text-emerald-600" />
+                  <FaUserMd className="text-[#0F766E]" />
                   Dokter yang Menangani <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="dokterPenanganan"
                   value={formData.dokterPenanganan}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-2.5 border ${errors.dokterPenanganan ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
+                  className={`w-full px-4 py-2.5 border ${errors.dokterPenanganan ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#0F766E]/30 focus:border-[#0F766E]`}
                 >
                   <option value="">-- Pilih Dokter --</option>
                   {activeDoctors.map((doctor) => (
@@ -495,7 +488,7 @@ const FinancialCRM = () => {
                 {/* Biaya Dasar */}
                 <div>
                   <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                    <FaMoneyBillWave className="text-emerald-600" />
+                    <FaMoneyBillWave className="text-[#0F766E]" />
                     Biaya Dasar <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -505,7 +498,7 @@ const FinancialCRM = () => {
                     onChange={handleInputChange}
                     placeholder="0"
                     min="0"
-                    className={`w-full px-4 py-2.5 border ${errors.biayaDasar ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
+                    className={`w-full px-4 py-2.5 border ${errors.biayaDasar ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#0F766E]/30 focus:border-[#0F766E]`}
                   />
                   {errors.biayaDasar && (
                     <p className="text-red-500 text-xs mt-1">{errors.biayaDasar}</p>
@@ -515,7 +508,7 @@ const FinancialCRM = () => {
                 {/* Diskon */}
                 <div>
                   <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                    <FaPercent className="text-emerald-600" />
+                    <FaPercent className="text-[#0F766E]" />
                     Diskon (%)
                   </label>
                   <input
@@ -526,7 +519,7 @@ const FinancialCRM = () => {
                     placeholder="0"
                     min="0"
                     max="100"
-                    className={`w-full px-4 py-2.5 border ${errors.diskonPersen ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
+                    className={`w-full px-4 py-2.5 border ${errors.diskonPersen ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#0F766E]/30 focus:border-[#0F766E]`}
                   />
                   {errors.diskonPersen && (
                     <p className="text-red-500 text-xs mt-1">{errors.diskonPersen}</p>
@@ -536,10 +529,10 @@ const FinancialCRM = () => {
 
               {/* Preview Biaya Bersih */}
               {formData.biayaDasar && (
-                <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg p-4">
+                <div className="bg-[#E8F8F6] border border-[#0F766E]/20 rounded-lg p-4">
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-semibold text-gray-700">Biaya Bersih:</span>
-                    <span className="text-2xl font-bold text-emerald-600">
+                    <span className="text-2xl font-bold text-[#0F766E]">
                       {formatCurrency(calculateBiayaBersih(formData.biayaDasar, formData.diskonPersen))}
                     </span>
                   </div>
@@ -554,14 +547,14 @@ const FinancialCRM = () => {
               {/* Metode Pembayaran */}
               <div>
                 <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
-                  <FaCreditCard className="text-emerald-600" />
+                  <FaCreditCard className="text-[#0F766E]" />
                   Metode Pembayaran <span className="text-red-500">*</span>
                 </label>
                 <select
                   name="metodePembayaran"
                   value={formData.metodePembayaran}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-2.5 border ${errors.metodePembayaran ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent`}
+                  className={`w-full px-4 py-2.5 border ${errors.metodePembayaran ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-[#0F766E]/30 focus:border-[#0F766E]`}
                 >
                   <option value="">-- Pilih Metode Pembayaran --</option>
                   {METODE_PEMBAYARAN.map((metode, index) => (
@@ -587,7 +580,7 @@ const FinancialCRM = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2.5 bg-[#0F766E] hover:bg-[#0A5E58] text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
                 >
                   <FaPlus className="text-sm" />
                   Tambah Tindakan

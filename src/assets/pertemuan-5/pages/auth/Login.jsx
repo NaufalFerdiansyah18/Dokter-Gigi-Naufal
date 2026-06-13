@@ -2,6 +2,8 @@ import React, { useState } from "react"
 import { BsFillExclamationDiamondFill } from "react-icons/bs"
 import { ImSpinner2 } from "react-icons/im"
 import { useNavigate } from "react-router-dom"
+import { authAPI } from "../../../../services/authAPI"
+import { supabase } from "../../../../services/supabaseClient"
 
 export default function Login() {
   const navigate = useNavigate()
@@ -9,7 +11,7 @@ export default function Login() {
   const [error, setError] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [dataForm, setDataForm] = useState({
-    username: "",
+    email: "",
     password: "",
   })
 
@@ -21,26 +23,52 @@ export default function Login() {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
+    setError("")
 
-    if (!dataForm.username.trim()) {
-      setError("Username tidak boleh kosong.")
+    if (!dataForm.email.trim()) {
+      setError("Email tidak boleh kosong.")
       return
     }
 
-    if (dataForm.password !== "naufal123") {
-      setError("Password salah. Gunakan password yang benar.")
+    if (!dataForm.password.trim()) {
+      setError("Password tidak boleh kosong.")
       return
     }
 
     setLoading(true)
-    setError("")
-    setTimeout(() => {
-      setLoading(false)
-      localStorage.setItem("isLoggedIn", "true")
+
+    const { data, error: authError } = await authAPI.login(dataForm.email, dataForm.password)
+
+    setLoading(false)
+
+    if (authError) {
+      setError(authError.message || "Login gagal. Periksa email dan password Anda.")
+      return
+    }
+
+    // Ambil role dari tabel public.users berdasarkan id user
+    const userId = data.user?.id
+    const { data: userData, error: userError } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", userId)
+      .single()
+
+    const role = userData?.role || "guest"
+
+    // Simpan session ke localStorage
+    localStorage.setItem("isLoggedIn", "true")
+    localStorage.setItem("user_email", data.user?.email || "")
+    localStorage.setItem("user_role", role)
+
+    // Redirect berdasarkan role
+    if (role === "admin") {
       navigate("/dashboard")
-    }, 600)
+    } else {
+      navigate("/guest")
+    }
   }
 
   const errorInfo = error ? (
@@ -69,12 +97,12 @@ export default function Login() {
 
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="space-y-1.5">
-          <label className="block text-xs font-medium text-gray-700">Username</label>
+          <label className="block text-xs font-medium text-gray-700">Email</label>
           <input
-            type="text"
-            name="username"
-            placeholder="Please enter your username"
-            value={dataForm.username}
+            type="email"
+            name="email"
+            placeholder="Masukkan email Anda"
+            value={dataForm.email}
             onChange={handleChange}
             className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#2BB5A0] focus:ring-1 focus:ring-[#2BB5A0] transition-all"
           />
@@ -86,7 +114,7 @@ export default function Login() {
             <input
               type={showPassword ? "text" : "password"}
               name="password"
-              placeholder="Enter password"
+              placeholder="Masukkan password"
               value={dataForm.password}
               onChange={handleChange}
               className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-[#2BB5A0] focus:ring-1 focus:ring-[#2BB5A0] transition-all"
@@ -107,12 +135,20 @@ export default function Login() {
           </div>
         </div>
 
-        <button type="submit" disabled={loading} className="w-full bg-[#2BB5A0] text-white font-medium text-sm py-2.5 rounded-lg hover:bg-[#15675C] transition-colors mt-2 disabled:opacity-70 disabled:cursor-not-allowed">
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-[#2BB5A0] text-white font-medium text-sm py-2.5 rounded-lg hover:bg-[#15675C] transition-colors mt-2 disabled:opacity-70 disabled:cursor-not-allowed"
+        >
           Login
         </button>
 
-        <div className="text-left mt-2">
+        <div className="flex items-center justify-between mt-2">
           <a href="/forgot" className="text-xs text-[#2BB5A0] font-medium hover:underline">Forgot Password?</a>
+          <span className="text-xs text-gray-500">
+            Belum punya akun?{" "}
+            <a href="/register" className="text-[#2BB5A0] font-medium hover:underline">Register</a>
+          </span>
         </div>
       </form>
     </div>

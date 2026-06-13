@@ -184,74 +184,56 @@ const ComplaintResolution = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Pusat Resolusi Komplain & Masukan Pasien
-          </h1>
-          <p className="text-gray-600">
-            Kelola dan monitor komplain pasien untuk meningkatkan kualitas layanan
+    <div className="flex flex-col w-full pb-10 min-h-screen bg-gray-50/30">
+
+      {/* Banner */}
+      <div className="relative bg-gradient-to-r from-[#1A7C6E] to-[#2BB5A0] rounded-3xl px-8 pt-10 pb-24 text-white overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+        <div className="absolute bottom-0 left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl translate-y-1/2" />
+        <div className="relative z-10">
+          <h1 className="text-3xl font-bold mb-2">Pusat Resolusi Komplain</h1>
+          <p className="text-white/80 text-sm max-w-lg">
+            Kelola dan monitor komplain pasien untuk meningkatkan kualitas layanan.
           </p>
         </div>
+      </div>
+
+      <div className="relative -mt-14 z-20 flex flex-col gap-6">
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           
           {/* Total Komplain Masuk */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <FaCommentDots className="text-2xl text-purple-600" />
-              </div>
-              <span className="text-2xl font-bold text-gray-900">
-                {statistics.totalKomplain}
-              </span>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5">
+            <div className="w-14 h-14 bg-[#E8F8F6] rounded-full flex items-center justify-center shrink-0">
+              <FaCommentDots className="text-2xl text-[#0F766E]" />
             </div>
-            <h3 className="text-sm font-semibold text-gray-600 mb-1">
-              Total Komplain Masuk
-            </h3>
-            <p className="text-xs text-gray-500">
-              Semua komplain yang tercatat
-            </p>
+            <div>
+              <p className="text-xs text-gray-400 font-medium">Total Komplain Masuk</p>
+              <p className="text-3xl font-extrabold text-gray-800">{statistics.totalKomplain}</p>
+            </div>
           </div>
 
-          {/* Sedang Diproses (In Progress) */}
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white hover:shadow-xl transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                <FaHourglassHalf className="text-2xl text-white" />
-              </div>
-              <span className="text-3xl font-bold">
-                {statistics.inProgress}
-              </span>
+          {/* Sedang Diproses */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5">
+            <div className="w-14 h-14 bg-blue-50 rounded-full flex items-center justify-center shrink-0">
+              <FaHourglassHalf className="text-2xl text-blue-600" />
             </div>
-            <h3 className="text-sm font-semibold text-blue-100 mb-1">
-              Sedang Diproses
-            </h3>
-            <p className="text-xs text-blue-100">
-              Komplain dalam penanganan
-            </p>
+            <div>
+              <p className="text-xs text-gray-400 font-medium">Sedang Diproses</p>
+              <p className="text-3xl font-extrabold text-gray-800">{statistics.inProgress}</p>
+            </div>
           </div>
 
-          {/* Selesai (Resolved) */}
-          <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-lg p-6 text-white hover:shadow-xl transition-shadow">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                <FaCheckCircle className="text-2xl text-white" />
-              </div>
-              <span className="text-3xl font-bold">
-                {statistics.resolved}
-              </span>
+          {/* Selesai */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex items-center gap-5">
+            <div className="w-14 h-14 bg-[#E8F8F6] rounded-full flex items-center justify-center shrink-0">
+              <FaCheckCircle className="text-2xl text-[#0F766E]" />
             </div>
-            <h3 className="text-sm font-semibold text-emerald-100 mb-1">
-              Selesai (Resolved)
-            </h3>
-            <p className="text-xs text-emerald-100">
-              Komplain telah ditangani
-            </p>
+            <div>
+              <p className="text-xs text-gray-400 font-medium">Selesai (Resolved)</p>
+              <p className="text-3xl font-extrabold text-gray-800">{statistics.resolved}</p>
+            </div>
           </div>
         </div>
 
@@ -273,18 +255,18 @@ const ComplaintResolution = () => {
         )}
 
         {/* Filter Bar */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
           <div className="flex items-center gap-3">
-            <FaFilter className="text-gray-500" />
+            <FaFilter className="text-gray-400" />
             <span className="text-sm font-semibold text-gray-700">Filter Status:</span>
             <div className="flex gap-2">
               {['All', 'Pending', 'In Progress', 'Resolved'].map((status) => (
                 <button
                   key={status}
                   onClick={() => setFilterStatus(status)}
-                  className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`px-4 py-1.5 rounded-xl text-sm font-medium transition-colors ${
                     filterStatus === status
-                      ? 'bg-emerald-600 text-white'
+                      ? 'bg-[#0F766E] text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
@@ -301,12 +283,10 @@ const ComplaintResolution = () => {
         </div>
 
         {/* Complaints Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-            <h2 className="text-xl font-bold text-gray-900">
-              Tabel Manajemen Komplain
-            </h2>
-            <p className="text-sm text-gray-600 mt-1">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/60">
+            <h2 className="text-lg font-bold text-gray-800">Tabel Manajemen Komplain</h2>
+            <p className="text-sm text-gray-400 mt-0.5">
               Menampilkan {filteredComplaints.length} dari {complaints.length} komplain
             </p>
           </div>
@@ -363,7 +343,7 @@ const ComplaintResolution = () => {
                         {/* Nama Pasien */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                          <div className="w-8 h-8 bg-gradient-to-br from-[#1A7C6E] to-[#2BB5A0] rounded-full flex items-center justify-center text-white text-xs font-bold">
                               {complaint.namaPasien.charAt(0)}
                             </div>
                             <span className="font-semibold">{complaint.namaPasien}</span>
@@ -478,24 +458,24 @@ const ComplaintResolution = () => {
         </div>
 
         {/* Success Rate Indicator */}
-        <div className="mt-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-lg font-bold text-gray-900">Success Rate</h3>
-              <p className="text-sm text-gray-600">Persentase komplain yang telah diselesaikan</p>
+              <h3 className="text-lg font-bold text-gray-800">Success Rate</h3>
+              <p className="text-sm text-gray-400">Persentase komplain yang telah diselesaikan</p>
             </div>
             <div className="text-right">
-              <p className="text-3xl font-bold text-emerald-600">
+              <p className="text-3xl font-bold text-[#0F766E]">
                 {statistics.totalKomplain > 0
                   ? Math.round((statistics.resolved / statistics.totalKomplain) * 100)
                   : 0}%
               </p>
-              <p className="text-xs text-gray-500">{statistics.resolved} dari {statistics.totalKomplain}</p>
+              <p className="text-xs text-gray-400">{statistics.resolved} dari {statistics.totalKomplain}</p>
             </div>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
             <div
-              className="bg-gradient-to-r from-emerald-500 to-teal-600 h-3 rounded-full transition-all duration-500"
+              className="bg-gradient-to-r from-[#1A7C6E] to-[#2BB5A0] h-3 rounded-full transition-all duration-500"
               style={{
                 width: `${statistics.totalKomplain > 0 ? (statistics.resolved / statistics.totalKomplain) * 100 : 0}%`
               }}
