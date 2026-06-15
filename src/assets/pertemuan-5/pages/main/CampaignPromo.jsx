@@ -4,11 +4,12 @@ import { useClinic } from "../../context/ClinicContext";
 import {
   FaBullhorn, FaSearch, FaFilter, FaExternalLinkAlt,
   FaPlus, FaTrash, FaTimes,
-  FaUsers,
+  FaUsers, FaPaperPlane,
 } from "react-icons/fa";
 import { MdOutlineLoyalty } from "react-icons/md";
 import Badge from "../../components/Badge";
 import Avatar from "../../components/Avatar";
+import NotificationManager from "../../../../services/notificationService";
 
 const LEVEL_COLOR = {
   Platinum: "bg-purple-100 text-purple-700",
@@ -65,6 +66,8 @@ export default function CampaignPromo() {
   const [filterPromo, setFilterPromo] = useState("Semua");
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [broadcasting, setBroadcasting] = useState(false);
+  const [broadcastResult, setBroadcastResult] = useState(null);
 
   // ── Stats
   const stats = useMemo(() => {
@@ -113,6 +116,49 @@ export default function CampaignPromo() {
     }
   };
 
+  // ── Broadcast promo to patients
+  const handleBroadcastPromo = async (campaign) => {
+    if (!confirm(`Kirim notifikasi promo "${campaign.judul}" ke pasien yang eligible?`)) {
+      return;
+    }
+
+    setBroadcasting(true);
+    setBroadcastResult(null);
+
+    try {
+      // Filter pasien berdasarkan target membership
+      const eligiblePatients = patients.filter((p) => {
+        return (
+          campaign.targetMembership.includes("Semua") ||
+          campaign.targetMembership.includes(p.levelMembership)
+        );
+      });
+
+      // Broadcast
+      const results = await NotificationManager.broadcastPromo(
+        eligiblePatients,
+        {
+          judul: campaign.judul,
+          deskripsi: campaign.deskripsi,
+          berlakuHingga: campaign.berlakuHingga,
+          badge: campaign.badge,
+        },
+        campaign.targetMembership
+      );
+
+      setBroadcastResult({
+        total: eligiblePatients.length,
+        success: results.filter((r) => r.whatsapp?.success).length,
+        campaign: campaign.judul,
+      });
+    } catch (error) {
+      console.error("Broadcast error:", error);
+      alert("Terjadi kesalahan saat broadcast promo");
+    }
+
+    setBroadcasting(false);
+  };
+
   return (
     <div className="flex flex-col w-full pb-10 min-h-screen bg-gray-50/30">
 
@@ -138,6 +184,24 @@ export default function CampaignPromo() {
 
       <div className="relative -mt-14 z-20 flex flex-col gap-6">
 
+      {/* Broadcast Result Notification */}
+      {broadcastResult && (
+        <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-5">
+          <div className="flex items-start gap-3">
+            <FaPaperPlane className="text-green-600 text-2xl mt-1" />
+            <div className="flex-1">
+              <h3 className="font-bold text-green-900 mb-1">Broadcast Berhasil!</h3>
+              <p className="text-sm text-green-700">
+                Promo "<strong>{broadcastResult.campaign}</strong>" telah dikirim ke <strong>{broadcastResult.success}</strong> dari {broadcastResult.total} pasien eligible.
+              </p>
+            </div>
+            <button onClick={() => setBroadcastResult(null)} className="text-green-600 hover:text-green-800">
+              <FaTimes />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard icon={<MdOutlineLoyalty />} label="Pasien Promo Aktif"   value={stats.promoAktif}    color="teal"   />
@@ -162,12 +226,24 @@ export default function CampaignPromo() {
               </div>
               <div className="px-4 py-3">
                 <p className="text-xs text-gray-500 mb-2 line-clamp-2">{c.deskripsi}</p>
-                <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center justify-between text-xs mb-3">
                   <span className={`font-bold px-2 py-0.5 rounded-full ${c.status === "Aktif" ? "bg-green-50 text-green-600" : "bg-gray-100 text-gray-500"}`}>
                     {c.status}
                   </span>
                   <span className="text-gray-400">Hingga {new Date(c.berlakuHingga).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</span>
                 </div>
+                <button
+                  onClick={() => handleBroadcastPromo(c)}
+                  disabled={broadcasting || c.status !== "Aktif"}
+                  className={`w-full flex items-center justify-center gap-2 text-xs font-bold py-2 rounded-xl transition-colors ${
+                    c.status === "Aktif" && !broadcasting
+                      ? "bg-[#0F766E] hover:bg-[#0A5E58] text-white"
+                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  <FaPaperPlane className="text-[10px]" />
+                  {broadcasting ? "Mengirim..." : "Broadcast Promo"}
+                </button>
               </div>
             </div>
           ))}

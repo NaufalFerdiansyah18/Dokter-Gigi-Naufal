@@ -1,20 +1,10 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ClinicProvider } from "./assets/pertemuan-5/context/ClinicContext";
-// import Dashboard from "./assets/pertemuan-5/pages/main/Dashboard";
-// // import Orders from "./assets/pertemuan-5/pages/main/Orders";
-// import Customer from "./assets/pertemuan-5/pages/main/Customer";
-// import NotFound from "./assets/pertemuan-5/pages/main/NotFound";
-// import Error400 from "./assets/pertemuan-5/pages/main/Error400";
-// import Error401 from "./assets/pertemuan-5/pages/main/Error401";
-// import Error403 from "./assets/pertemuan-5/pages/main/Error403";
 import { MainLayout } from "./assets/pertemuan-5/layouts/MainLayout";
 import AuthLayout from "./assets/pertemuan-5/layouts/AuthLayouth";
 import GuestLayout from "./assets/pertemuan-5/layouts/GuestLayout";
-// import Login from "./assets/pertemuan-5/pages/auth/Login";
-// import Register from "./assets/pertemuan-5/pages/auth/Register";
-// import Forgot from "./assets/pertemuan-5/pages/auth/Forgot";
+import MemberLayout from "./assets/pertemuan-5/layouts/MemberLayout";
 import React, { Suspense } from "react";
-// import Loading from "./assets/pertemuan-5/components/Loading";
 
 
 const Dashboard = React.lazy(() => import("./assets/pertemuan-5/pages/main/Dashboard"))
@@ -29,6 +19,7 @@ const DoctorDetail = React.lazy(() => import("./assets/pertemuan-5/pages/main/Do
 const PasienCRM = React.lazy(() => import("./assets/pertemuan-5/pages/main/PasienCRM"))
 const CampaignPromo = React.lazy(() => import("./assets/pertemuan-5/pages/main/CampaignPromo"))
 const FeedbackRating = React.lazy(() => import("./assets/pertemuan-5/pages/main/FeedbackRating"))
+const NotificationSettings = React.lazy(() => import("./assets/pertemuan-5/pages/main/NotificationSettings"))
 
 const GuestBeranda  = React.lazy(() => import("./assets/pertemuan-5/pages/guest/GuestBeranda"))
 const GuestJadwal   = React.lazy(() => import("./assets/pertemuan-5/pages/guest/GuestJadwal"))
@@ -40,7 +31,13 @@ const GuestKomplain = React.lazy(() => import("./assets/pertemuan-5/pages/guest/
 const GuestProfil   = React.lazy(() => import("./assets/pertemuan-5/pages/guest/GuestProfil"))
 const GuestPromo    = React.lazy(() => import("./assets/pertemuan-5/pages/guest/GuestPromo"))
 
-
+const MemberDashboard = React.lazy(() => import("./assets/pertemuan-5/pages/member/MemberDashboard"))
+const MemberBooking   = React.lazy(() => import("./assets/pertemuan-5/pages/member/MemberBooking"))
+const MemberRiwayat   = React.lazy(() => import("./assets/pertemuan-5/pages/member/MemberRiwayat"))
+const MemberTransaksi = React.lazy(() => import("./assets/pertemuan-5/pages/member/MemberTransaksi"))
+const MemberLoyalty   = React.lazy(() => import("./assets/pertemuan-5/pages/member/MemberLoyalty"))
+const MemberChat      = React.lazy(() => import("./assets/pertemuan-5/pages/member/MemberChat"))
+const MemberProfil    = React.lazy(() => import("./assets/pertemuan-5/pages/member/MemberProfil"))
 
 const Register = React.lazy(() => import("./assets/pertemuan-5/pages/auth/Register"))
 const Login = React.lazy(() => import("./assets/pertemuan-5/pages/auth/Login"))
@@ -54,11 +51,20 @@ const Loading = React.lazy(() => import("./assets/pertemuan-5/components/Loading
 
 
 
-function ProtectedGuestRoute({ children }) {
+// Protected Route untuk Member Area
+function ProtectedMemberRoute({ children }) {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  const userRole = localStorage.getItem("user_role");
+  
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
+  
+  // Admin tidak bisa akses member area
+  if (userRole === "admin") {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
   return children;
 }
 
@@ -68,6 +74,8 @@ function App() {
       <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<Navigate to="/guest" replace />} />
+          
+          {/* Admin Routes */}
           <Route element={<MainLayout />} >
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/doctors" element={<Doctors />} />
@@ -80,14 +88,18 @@ function App() {
             <Route path="/crm-pasien"     element={<PasienCRM />} />
             <Route path="/campaign-promo" element={<CampaignPromo />} />
             <Route path="/feedback"       element={<FeedbackRating />} />
+            <Route path="/notification-settings" element={<NotificationSettings />} />
             <Route path="*" element={<NotFound />} />
           </Route>
+          
+          {/* Auth Routes */}
           <Route element={<AuthLayout />}>
-            <Route index element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot" element={<Forgot />} />
           </Route>
+          
+          {/* Guest Routes (Public) */}
           <Route element={<GuestLayout />}>
             <Route path="/guest"          element={<GuestBeranda />} />
             <Route path="/guest/layanan"  element={<GuestLayanan />} />
@@ -97,7 +109,18 @@ function App() {
             <Route path="/guest/chat"     element={<GuestChat />} />
             <Route path="/guest/komplain" element={<GuestKomplain />} />
             <Route path="/guest/promo"    element={<GuestPromo />} />
-            <Route path="/guest/profil"   element={<ProtectedGuestRoute><GuestProfil /></ProtectedGuestRoute>} />
+            <Route path="/guest/profil"   element={<GuestProfil />} />
+          </Route>
+
+          {/* Member Routes (Protected) */}
+          <Route element={<MemberLayout />}>
+            <Route path="/member" element={<ProtectedMemberRoute><MemberDashboard /></ProtectedMemberRoute>} />
+            <Route path="/member/booking" element={<ProtectedMemberRoute><MemberBooking /></ProtectedMemberRoute>} />
+            <Route path="/member/riwayat" element={<ProtectedMemberRoute><MemberRiwayat /></ProtectedMemberRoute>} />
+            <Route path="/member/transaksi" element={<ProtectedMemberRoute><MemberTransaksi /></ProtectedMemberRoute>} />
+            <Route path="/member/loyalty" element={<ProtectedMemberRoute><MemberLoyalty /></ProtectedMemberRoute>} />
+            <Route path="/member/chat" element={<ProtectedMemberRoute><MemberChat /></ProtectedMemberRoute>} />
+            <Route path="/member/profil" element={<ProtectedMemberRoute><MemberProfil /></ProtectedMemberRoute>} />
           </Route>
         </Routes>
       </Suspense>

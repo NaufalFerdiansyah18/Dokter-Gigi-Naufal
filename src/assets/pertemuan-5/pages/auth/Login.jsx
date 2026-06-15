@@ -67,7 +67,7 @@ export default function Login() {
     if (role === "admin") {
       navigate("/dashboard")
     } else {
-      navigate("/guest")
+      navigate("/member")
     }
   }
 

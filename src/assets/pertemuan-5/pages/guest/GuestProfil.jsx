@@ -34,13 +34,17 @@ export default function GuestProfil() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     async function fetchUserData() {
       const userEmail = localStorage.getItem("user_email");
+      const loggedIn = localStorage.getItem("isLoggedIn") === "true";
       
-      if (!userEmail) {
-        navigate("/login");
+      setIsLoggedIn(loggedIn);
+
+      if (!userEmail || !loggedIn) {
+        setLoading(false);
         return;
       }
 
@@ -48,7 +52,8 @@ export default function GuestProfil() {
       const { data: authData } = await supabase.auth.getUser();
       
       if (!authData.user) {
-        navigate("/login");
+        setIsLoggedIn(false);
+        setLoading(false);
         return;
       }
 
@@ -73,12 +78,48 @@ export default function GuestProfil() {
     }
 
     fetchUserData();
-  }, [navigate]);
+  }, []);
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-gray-500">Memuat profil...</div>
+      </div>
+    );
+  }
+
+  // Tampilan untuk user yang belum login
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center px-6">
+        <div className="max-w-md w-full text-center">
+          <div className="w-24 h-24 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-[#0F766E] to-[#14B8A6] flex items-center justify-center">
+            <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <h1 className="text-2xl font-extrabold text-gray-900 mb-3">Profil Saya</h1>
+          <p className="text-gray-500 mb-8">
+            Anda perlu login terlebih dahulu untuk melihat dan mengelola profil Anda.
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate("/login")}
+              className="w-full bg-[#0F766E] hover:bg-[#0A5E58] text-white font-semibold py-3 px-6 rounded-xl transition-colors"
+            >
+              Login Sekarang
+            </button>
+            <button
+              onClick={() => navigate("/register")}
+              className="w-full bg-white hover:bg-gray-50 text-[#0F766E] border-2 border-[#0F766E] font-semibold py-3 px-6 rounded-xl transition-colors"
+            >
+              Daftar Akun Baru
+            </button>
+          </div>
+          <p className="text-xs text-gray-400 mt-6">
+            Dengan login, Anda bisa mengakses riwayat perawatan, jadwal konsultasi, dan promo eksklusif.
+          </p>
+        </div>
       </div>
     );
   }
