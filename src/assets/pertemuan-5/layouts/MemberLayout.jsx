@@ -12,7 +12,6 @@ import {
   FaTimes,
   FaBell,
   FaCog,
-  FaPaperPlane,
 } from "react-icons/fa";
 import { MdSpaceDashboard } from "react-icons/md";
 
@@ -22,7 +21,6 @@ const menuItems = [
   { to: "/member/riwayat", icon: <FaHistory />, label: "Riwayat Medis" },
   { to: "/member/transaksi", icon: <FaCreditCard />, label: "Transaksi" },
   { to: "/member/loyalty", icon: <FaGift />, label: "Loyalty & Promo" },
-  { to: "/member/notifications", icon: <FaPaperPlane />, label: "Notifications" },
 ];
 
 export default function MemberLayout() {

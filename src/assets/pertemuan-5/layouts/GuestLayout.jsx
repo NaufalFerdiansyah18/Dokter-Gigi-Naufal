@@ -9,7 +9,6 @@ const navLinks = [
   { to: "/guest/harga",    label: "Harga" },
   { to: "/guest/promo",    label: "Promo" },
   { to: "/guest/komplain", label: "Komplain" },
-  { to: "/guest/profil",   label: "Profil Saya" },
 ];
 
 export default function GuestLayout() {

@@ -28,7 +28,6 @@ const GuestDokter   = React.lazy(() => import("./assets/pertemuan-5/pages/guest/
 const GuestHarga    = React.lazy(() => import("./assets/pertemuan-5/pages/guest/GuestHarga"))
 const GuestChat     = React.lazy(() => import("./assets/pertemuan-5/pages/guest/GuestChat"))
 const GuestKomplain = React.lazy(() => import("./assets/pertemuan-5/pages/guest/GuestKomplain"))
-const GuestProfil   = React.lazy(() => import("./assets/pertemuan-5/pages/guest/GuestProfil"))
 const GuestPromo    = React.lazy(() => import("./assets/pertemuan-5/pages/guest/GuestPromo"))
 
 const MemberDashboard = React.lazy(() => import("./assets/pertemuan-5/pages/member/MemberDashboard"))
@@ -109,7 +108,6 @@ function App() {
             <Route path="/guest/chat"     element={<GuestChat />} />
             <Route path="/guest/komplain" element={<GuestKomplain />} />
             <Route path="/guest/promo"    element={<GuestPromo />} />
-            <Route path="/guest/profil"   element={<GuestProfil />} />
           </Route>
 
           {/* Member Routes (Protected) */}

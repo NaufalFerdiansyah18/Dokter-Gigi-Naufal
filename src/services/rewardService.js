@@ -100,7 +100,7 @@ export const REWARD_CATALOG = [
 ];
 
 // ==================== POINTS EARNING RULES ====================
-export const POINTS_RULES = {
+const POINTS_RULES = {
   // Poin per transaksi (1% dari nilai transaksi)
   transactionRate: 0.01,
 

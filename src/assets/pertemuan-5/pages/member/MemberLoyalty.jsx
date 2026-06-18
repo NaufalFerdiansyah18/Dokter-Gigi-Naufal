@@ -20,9 +20,11 @@ export default function MemberLoyalty() {
   const [selectedReward, setSelectedReward] = useState(null);
   const [claimLoading, setClaimLoading] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: "", type: "success" });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchUserData() {
+      setIsLoading(true);
       try {
         const userEmail = localStorage.getItem("user_email");
         
@@ -35,6 +37,9 @@ export default function MemberLoyalty() {
             name: "Guest",
             email: userEmail || "guest@example.com"
           });
+          setVouchers([]);
+          setAvailableRewards(RewardService.getAvailableRewards(0, "Bronze"));
+          setIsLoading(false);
           return;
         }
         
@@ -52,6 +57,7 @@ export default function MemberLoyalty() {
           });
           setVouchers([]);
           setAvailableRewards(RewardService.getAvailableRewards(0, "Bronze"));
+          setIsLoading(false);
           return;
         }
         
@@ -81,6 +87,8 @@ export default function MemberLoyalty() {
         });
         setVouchers([]);
         setAvailableRewards([]);
+      } finally {
+        setIsLoading(false);
       }
     }
     fetchUserData();
@@ -181,8 +189,22 @@ export default function MemberLoyalty() {
     setNotification({ show: true, message: "Voucher berhasil digunakan!", type: "success" });
   };
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="max-w-5xl mx-auto space-y-6 p-8">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#0F766E] mx-auto mb-4"></div>
+            <p className="text-gray-600 font-semibold">Memuat data loyalty...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6 p-4">
       {/* Notification Toast */}
       {notification.show && (
         <div className={`fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg ${notification.type === "success" ? "bg-green-500" : "bg-red-500"} text-white animate-fade-in`}>

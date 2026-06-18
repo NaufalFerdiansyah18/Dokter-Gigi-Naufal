@@ -123,8 +123,8 @@ export default function GuestPromo() {
                     </div>
 
                     <Link
-                      to="/guest/komplain"
-                      className="w-full flex items-center justify-center gap-2 bg-[#0F766E] hover:bg-[#0A5E58] text-white text-sm font-bold py-2.5 rounded-xl transition-colors"
+                      to="/login"
+                      className="w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-100 text-[#0F766E] text-sm font-bold py-2.5 rounded-xl transition-colors"
                     >
                       Klaim Promo <FaArrowRight className="text-xs" />
                     </Link>
@@ -141,7 +141,7 @@ export default function GuestPromo() {
           <p className="text-white/80 mb-6">Daftar sebagai member dan dapatkan akses ke promo khusus berdasarkan level keanggotaan Anda.</p>
           <Link
             to="/register"
-            className="inline-flex items-center gap-2 bg-white text-[#0F766E] font-bold px-8 py-3 rounded-xl hover:bg-gray-100 transition-colors"
+            className="inline-flex items-center gap-2 bg-[#0F766E] hover:bg-[#0A5E58] text-white font-bold px-8 py-3 rounded-xl transition-colors"
           >
             Daftar Sekarang <FaArrowRight className="text-sm" />
           </Link>
