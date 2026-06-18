@@ -65,7 +65,7 @@ export default function GuestLayout() {
               style={{ color: "white" }}
               className="text-sm font-semibold hover:opacity-80 transition-opacity"
             >
-              Admin Login
+              Login
             </button>
             <Link
               to="/guest/komplain"
@@ -106,7 +106,7 @@ export default function GuestLayout() {
                 onClick={() => { navigate("/login"); setMobileOpen(false); }}
                 className="flex-1 py-2 text-sm font-semibold border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50"
               >
-                Admin Login
+                Login
               </button>
             </div>
           </div>
