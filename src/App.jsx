@@ -55,15 +55,20 @@ function ProtectedMemberRoute({ children }) {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   const userRole = localStorage.getItem("user_role");
   
+  console.log("ProtectedMemberRoute check:", { isLoggedIn, userRole });
+  
   if (!isLoggedIn) {
+    console.log("Not logged in, redirecting to /login");
     return <Navigate to="/login" replace />;
   }
   
   // Admin tidak bisa akses member area
   if (userRole === "admin") {
+    console.log("User is admin, redirecting to /dashboard");
     return <Navigate to="/dashboard" replace />;
   }
   
+  console.log("Access granted to member area");
   return children;
 }
 
@@ -120,6 +125,9 @@ function App() {
             <Route path="/member/chat" element={<ProtectedMemberRoute><MemberChat /></ProtectedMemberRoute>} />
             <Route path="/member/profil" element={<ProtectedMemberRoute><MemberProfil /></ProtectedMemberRoute>} />
           </Route>
+
+          {/* 404 Catch All */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
     </ClinicProvider>
