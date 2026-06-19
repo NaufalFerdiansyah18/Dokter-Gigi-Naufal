@@ -32,7 +32,13 @@ export default function MemberLayout() {
     async function fetchUserData() {
       const userEmail = localStorage.getItem("user_email");
       if (!userEmail) {
-        navigate("/login");
+        // Set default guest data instead of redirecting
+        setUserData({
+          email: "guest@nopaldentalcare.com",
+          username: "Guest",
+          full_name: "Guest User",
+          role: "guest"
+        });
         return;
       }
 
@@ -57,7 +63,7 @@ export default function MemberLayout() {
     fetchUserData();
   }, [navigate]);
 
-  const displayName = userData?.full_name || userData?.username || userData?.email?.split("@")[0] || "User";
+  const displayName = userData?.full_name || userData?.username || userData?.email?.split("@")[0] || "Guest";
   const userInitial = displayName.charAt(0).toUpperCase();
 
   const handleLogout = () => {

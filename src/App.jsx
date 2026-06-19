@@ -50,27 +50,25 @@ const Loading = React.lazy(() => import("./assets/pertemuan-5/components/Loading
 
 
 
-// Protected Route untuk Member Area
+// Optional: ProtectedMemberRoute (Currently Disabled - All routes are public)
+// Uncomment this function if you want to enable login protection later
+/*
 function ProtectedMemberRoute({ children }) {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   const userRole = localStorage.getItem("user_role");
   
-  console.log("ProtectedMemberRoute check:", { isLoggedIn, userRole });
-  
   if (!isLoggedIn) {
-    console.log("Not logged in, redirecting to /login");
     return <Navigate to="/login" replace />;
   }
   
   // Admin tidak bisa akses member area
   if (userRole === "admin") {
-    console.log("User is admin, redirecting to /dashboard");
     return <Navigate to="/dashboard" replace />;
   }
   
-  console.log("Access granted to member area");
   return children;
 }
+*/
 
 function App() {
   return (
@@ -115,15 +113,15 @@ function App() {
             <Route path="/guest/promo"    element={<GuestPromo />} />
           </Route>
 
-          {/* Member Routes (Protected) */}
+          {/* Member Routes (No Login Required) */}
           <Route element={<MemberLayout />}>
-            <Route path="/member" element={<ProtectedMemberRoute><MemberDashboard /></ProtectedMemberRoute>} />
-            <Route path="/member/booking" element={<ProtectedMemberRoute><MemberBooking /></ProtectedMemberRoute>} />
-            <Route path="/member/riwayat" element={<ProtectedMemberRoute><MemberRiwayat /></ProtectedMemberRoute>} />
-            <Route path="/member/transaksi" element={<ProtectedMemberRoute><MemberTransaksi /></ProtectedMemberRoute>} />
-            <Route path="/member/loyalty" element={<ProtectedMemberRoute><MemberLoyalty /></ProtectedMemberRoute>} />
-            <Route path="/member/chat" element={<ProtectedMemberRoute><MemberChat /></ProtectedMemberRoute>} />
-            <Route path="/member/profil" element={<ProtectedMemberRoute><MemberProfil /></ProtectedMemberRoute>} />
+            <Route path="/member" element={<MemberDashboard />} />
+            <Route path="/member/booking" element={<MemberBooking />} />
+            <Route path="/member/riwayat" element={<MemberRiwayat />} />
+            <Route path="/member/transaksi" element={<MemberTransaksi />} />
+            <Route path="/member/loyalty" element={<MemberLoyalty />} />
+            <Route path="/member/chat" element={<MemberChat />} />
+            <Route path="/member/profil" element={<MemberProfil />} />
           </Route>
 
           {/* 404 Catch All */}
