@@ -88,7 +88,7 @@ export default function GuestBeranda() {
             {/* Kiri: Teks */}
             <div>
               <p className="text-white/80 font-bold text-sm uppercase tracking-widest mb-4">
-                Nopall UI Dental Clinic
+                Nopal Dental Care
               </p>
               <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-5">
                 Excellence in<br />

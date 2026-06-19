@@ -78,7 +78,7 @@ export default function MemberLayout() {
               <FaTooth className="text-white text-lg -scale-x-100" />
             </div>
             <div>
-              <p className="text-lg font-extrabold">Nopall UI</p>
+              <p className="text-lg font-extrabold">Nopal Dental Care</p>
               <p className="text-[10px] text-white/70 font-semibold tracking-widest uppercase">Member Area</p>
             </div>
           </div>
@@ -140,7 +140,7 @@ export default function MemberLayout() {
               <FaTooth className="text-white text-lg -scale-x-100" />
             </div>
             <div>
-              <p className="text-lg font-extrabold">Nopall UI</p>
+              <p className="text-lg font-extrabold">Nopal Dental Care</p>
               <p className="text-[10px] text-white/70 font-semibold tracking-widest uppercase">Member</p>
             </div>
           </div>

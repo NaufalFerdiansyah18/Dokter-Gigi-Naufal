@@ -83,10 +83,10 @@ export default function Sidebar() {
         </div>
         <div className="leading-tight">
           <p className="text-[17px] font-extrabold tracking-tight" style={{ color: '#ffffff' }}>
-            Nopall UI
+            Nopal Dental Care
           </p>
           <p className="text-[10px] font-semibold tracking-[0.18em] uppercase mt-0.5" style={{ color: '#ffffff' }}>
-            Dental Clinic
+            Admin Panel
           </p>
         </div>
       </div>

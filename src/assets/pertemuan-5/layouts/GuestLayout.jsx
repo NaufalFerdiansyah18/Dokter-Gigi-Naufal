@@ -34,9 +34,8 @@ export default function GuestLayout() {
               <FaTooth className="text-white text-base -scale-x-100" />
             </div>
             <div className="leading-tight">
-              <span className="text-[16px] font-extrabold text-white">Nopall</span>
-              <span className="text-[16px] font-extrabold text-[#A7F3D0]"> UI</span>
-              <p className="text-[9px] text-white/60 font-semibold tracking-widest uppercase -mt-0.5">Dental Clinic</p>
+              <span className="text-[16px] font-extrabold text-white">Nopal Dental Care</span>
+              <p className="text-[9px] text-white/60 font-semibold tracking-widest uppercase -mt-0.5">Klinik Gigi</p>
             </div>
           </Link>
 
@@ -126,7 +125,7 @@ export default function GuestLayout() {
               <div className="w-8 h-8 rounded-xl bg-[#0F766E] flex items-center justify-center">
                 <FaTooth className="text-white text-sm -scale-x-100" />
               </div>
-              <span className="font-extrabold text-lg">Nopall UI <span className="text-[#14B8A6]">Dental</span></span>
+              <span className="font-extrabold text-lg">Nopal Dental Care</span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">
               Klinik gigi modern dengan teknologi terkini. Memberikan perawatan gigi terbaik untuk senyum lebih percaya diri.
@@ -142,12 +141,12 @@ export default function GuestLayout() {
             <p className="font-bold text-sm mb-3 text-white">Kontak</p>
             <p className="text-sm text-gray-400 mb-1">📍 Jl. Sudirman No. 12, Pekanbaru</p>
             <p className="text-sm text-gray-400 mb-1">📞 0761-123456</p>
-            <p className="text-sm text-gray-400 mb-1">✉️ info@nopallui.com</p>
+            <p className="text-sm text-gray-400 mb-1">✉️ info@nopaldentalcare.com</p>
             <p className="text-sm text-gray-400">🕐 Senin–Sabtu, 08:00–17:00</p>
           </div>
         </div>
         <div className="border-t border-gray-800 px-6 py-4 text-center">
-          <p className="text-xs text-gray-500">© 2025 Nopall UI Dental Clinic. All rights reserved.</p>
+          <p className="text-xs text-gray-500">© 2025 Nopal Dental Care. All rights reserved.</p>
         </div>
       </footer>
 

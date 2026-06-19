@@ -146,7 +146,7 @@ export default function GuestKomplain() {
           {[
             { icon: <FaMapMarkerAlt className="text-[#0F766E]" />, label: "Alamat",       value: "Jl. Sudirman No. 12, Pekanbaru, Riau" },
             { icon: <FaPhoneAlt className="text-[#0F766E]" />,    label: "Telepon",      value: "0761-123456" },
-            { icon: <FaEnvelope className="text-[#0F766E]" />,    label: "Email",        value: "info@nopallui.com" },
+            { icon: <FaEnvelope className="text-[#0F766E]" />,    label: "Email",        value: "info@nopaldentalcare.com" },
           ].map((c) => (
             <div key={c.label} className="flex items-start gap-3 bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
               <div className="w-10 h-10 rounded-xl bg-[#E8F8F6] flex items-center justify-center text-lg shrink-0">

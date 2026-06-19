@@ -47,7 +47,7 @@ export default function GuestChat() {
           N
         </div>
         <div>
-          <p className="text-sm font-bold text-gray-800">Admin Nopall Clinic</p>
+          <p className="text-sm font-bold text-gray-800">Admin Nopal Dental Care</p>
           <div className="flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
             <p className="text-[11px] text-gray-400">Online</p>
